@@ -57,19 +57,20 @@
   :profiles
   {:uberjar {:omit-source true
              :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
-             :cljsbuild{:builds
-              {:min
-               {:source-paths ["src/cljc" "src/cljs" "env/prod/cljs"]
-                :compiler
-                {:output-dir "target/cljsbuild/public/js"
-                 :output-to "target/cljsbuild/public/js/app.js"
-                 :source-map "target/cljsbuild/public/js/app.js.map"
-                 :optimizations :advanced
-                 :pretty-print false
-                 :infer-externs true
-                 :closure-warnings
-                 {:externs-validation :off :non-standard-jsdoc :off}
-                 :externs ["react/externs/react.js"]}}}}
+             :cljsbuild
+               {:builds
+                {:min
+                 {:source-paths ["src/cljc" "src/cljs" "env/prod/cljs"]
+                  :compiler
+                  {:output-dir "target/cljsbuild/public/js"
+                   :output-to "target/cljsbuild/public/js/app.js"
+                   :source-map "target/cljsbuild/public/js/app.js.map"
+                   :optimizations :advanced
+                   :pretty-print false
+                   :infer-externs true
+                   :closure-warnings
+                   {:externs-validation :off :non-standard-jsdoc :off}
+                   :externs ["react/externs/react.js"]}}}}
              
              :aot :all
              :uberjar-name "dealership-ui.jar"
