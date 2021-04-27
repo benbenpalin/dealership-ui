@@ -4,8 +4,6 @@
     [reagent.dom :as rdom]
     [reagent.core :as r]
     [re-frame.core :as rf]
-    [goog.events :as events]
-    [goog.history.EventType :as HistoryEventType]
     [markdown.core :refer [md->html]]
     [dealership-ui.ajax :as ajax]
     [dealership-ui.events]
@@ -35,17 +33,11 @@
                 {:class (when @expanded? :is-active)}
                 [:div.navbar-start
                  [nav-link "#/" "Home" :home]
-                 [nav-link "#/about" "About" :about]
                  [nav-link "#/report" "Report" :report]
                  [nav-link "#/book" "Book" :book]
                  [nav-link "#/update" "Update" :update]
                  [nav-link "#/bill" "Bill" :bill]
                  [nav-link "#/arrival" "Arrival" :arrival]]]]))
-
-
-(defn about-page []
-  [:section.section>div.container>div.content
-   [:img {:src "/img/warning_clojure.png"}]])
 
 (defn text-input [label id]
   [:div
@@ -276,10 +268,7 @@
 (def router
   (reitit/router
     [["/" {:name        :home
-           :view        #'home-page
-           :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
-     ["/about" {:name :about
-                :view #'about-page}]
+           :view        #'home-page}]
      ["/report" {:name :report
                  :view #'report-page}]
      ["/book" {:name :book
