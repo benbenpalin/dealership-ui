@@ -4,11 +4,13 @@
   :url "http://example.com/FIXME"
 
   :dependencies [[ch.qos.logback/logback-classic "1.2.3"]
+                 [binaryage/devtools "1.0.3"]
                  [cljs-ajax "0.8.3"]
                  [clojure.java-time "0.3.2"]
                  [com.cognitect/transit-clj "1.0.324"]
                  [cprop "0.1.17"]
                  [day8.re-frame/http-fx "0.2.3"]
+                 [day8.re-frame/re-frame-10x "1.0.2"]
                  [expound "0.8.9"]
                  [funcool/struct "1.4.0"]
                  [luminus-transit "0.1.2"]
