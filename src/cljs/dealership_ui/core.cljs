@@ -74,7 +74,6 @@
      [text-input "Car ID" "carId"]
      [text-input "Sale Price" "price"]
      [:div
-      [:label {:for "date"} "Date of Sale"]
       [:input {:type "date" :id "date" :name "date"}]]
      [:input {:type "submit" :value "Complete Sale"}]]]))
 
