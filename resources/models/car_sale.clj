@@ -7,30 +7,30 @@
 ; returns bill info (not currently in store)
 (def complete-purchase-request
   {:customer {:new true
-              :customer-ids [""];;optional, only if false
-              :new-customers [{:first-name "";;optional, only if true
-                               :middle-initial ""
-                               :last-name ""
-                               :phone-number ""
-                               :street-address ""
-                               :city ""
-                               :state ""
-                               :zipcode ""}]}
-   :car-id ""
-   :sale-price ""})
+              :customerIds [""];;optional, only if false
+              :newCustomers [{:firstName "";;optional, only if true
+                              :middleInitial ""
+                              :lastName ""
+                              :phoneNumber ""
+                              :streetAddress ""
+                              :city ""
+                              :state ""
+                              :zipcode ""}]}
+   :carId ""
+   :salePrice ""})
 
 (def complete-purchase-response
   ;;Bill
-  {:customer-names ["", ""]
-   :purchase-id ""
+  {:customerNames ["", ""]
+   :purchaseId ""
    ;:date-of-sale "" ;; already in store
    ;:sale-price "" ;; already in store
    :make ""
    :model ""
    :year ""
    :color ""
-   :license-plate-number ""
-   :license-plate-state ""})
+   :licensePlateNumber ""
+   :licensePlateState ""})
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -39,16 +39,16 @@
 ;; no updates or insertions
 ; pulls data
 (def get-report-request
-  {:start-date ""
-   :end-date ""})
+  {:startDate ""
+   :endDate ""})
 
 ;; list of ALL vehicles in Vehicle_Type table, and related sales data
 (def get-report-response
-  [{:vehicle-id ""
+  [{:vehicleId ""
     :make ""
     :model ""
     :year ""
-    :total-sold 100
+    :totalSold 100
     :profit 100.00}])
 
 
@@ -61,7 +61,7 @@
 (def get-packages-request nil)
 
 (def get-packages-response
-   :packages [{:name "" :package_id ""}])
+   :packages [{:name "" :packageId ""}])
 
 ;;; Get Vehicle Types (on car not in system) - GET
 ;; pulls (ordered) the makes and models  and years in Vehicle_Type table
@@ -71,33 +71,33 @@
  [{:make ""
    :model ""
    :year ""
-   :vehicle-id ""}])
+   :vehicleId ""}])
 
 
 ;;; get tasks - GET
 ;; gets tasks in package, and tasks not in that package
 ;; If no package ID, return tasks-in-package as nil and all tasks in :tasks-not-in-package
 (def get-tasks-request
-  {:package-id ""})
+  {:packageId ""})
 
 (def get-tasks-response
-  {:tasks-in-package [{:task_id ""
-                       :task-name ""
-                       :estd-time}]
-   :tasks-not-in-package [{:task_id ""
-                           :task-name ""
-                           :estd-time}]})
+  {:tasksInPackage [{:taskId ""
+                     :taskName ""
+                     :estdTime}]
+   :tasksNotInPackage [{:taskId ""
+                        :taskName ""
+                        :estdTime}]})
 
 ;;; get timeslot - GET
 ;; Total estimated time of selected tasks, and get timeslots that work
 (def get-timeslot-request
-  {:total-time 10
+  {:totalTime 10
    :date ""})
 
 (def get-timeslot-response
-  [{:timeslot-id ""
-    :start-time ""
-    :end-time ""}])
+  [{:timeslotId ""
+    :startTime ""
+    :endTime ""}])
 
 ;;; Submit appointment - POST
 ;; adds new customer(s) (if applicable)
@@ -107,56 +107,56 @@
 ;; add all tasks to Additionally scheduled.
 (def submit-appointment-request
   {:customer {:new true
-              :customer-ids [""];;optional, only if false
-              :new-customers [{:first-name "";;optional, only if true
-                               :middle-initial ""
-                               :last-name ""
-                               :phone-number ""
-                               :street-address ""
-                               :city ""
-                               :state ""
-                               :zipcode ""}]}
+              :customerIds [""];;optional, only if false
+              :newCustomers [{:firstName "";;optional, only if true
+                              :middleInitial ""
+                              :lastName ""
+                              :phoneNumber ""
+                              :streetAddress ""
+                              :city ""
+                              :state ""
+                              :zipcode ""}]}
    :car {:new true
-         :car-id "" ;;optional, only if false
-         :vehicle-id" ";;optional, only if true
-         :license-plate-number "";;optional, only if true
-         :license-plate-state "";;optional, only if true
+         :carId "" ;;optional, only if false
+         :vehicleId" ";;optional, only if true
+         :licensePlateNumber "";;optional, only if true
+         :licensePlateState "";;optional, only if true
          :color "";;optional, only if true
          :odometer ""};;optional, only if true
-   :package-id ""
+   :packageId ""
    :tasks ["task-id" "task-id"]
-   :timeslot-id ""})
+   :timeslotId ""})
 
 (def submit-appointment-response
-  {:appointment-id})
+  {:appointmentId})
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Update Service Record
 ;;; get today's appointments ON LOAD - GET
 (def todays-appointments-request nil)
 
 (def todays-appointments-response
-  {:appointment-id ""
+  {:appointmentId ""
    :color ""
    :year ""
    :make ""
    :model ""
-   :vehicle-id ""})
+   :vehicleId ""})
 
 ;;; Get appointment tasks - GET
 ;; get tasks for selected appointment, and related info, from Scheduled table
 (def get-appointment-tasks-request
-  {:appointment-id ""})
+  {:appointmentId ""})
 
 (def get-appointment-tasks-response
-  {:tests [{:task-id ""
-            :task-name ""
-            :test-failure-task-id ""
-            :test-failure-task-name ""}]
-   :part-replacement [{:task-id ""
-                       :task-name ""
-                       :part-id ""
-                       :part-name ""
-                       :cost-of-part ""}]})
+  {:tests [{:taskId ""
+            :taskName ""
+            :testFailureTaskId ""
+            :testFailureTaskName ""}]
+   :partReplacement [{:taskId ""
+                      :taskName ""
+                      :partId ""
+                      :partName ""
+                      :costOfPart ""}]})
 
 
 
@@ -164,8 +164,8 @@
 ;; Adds Parts to Was_Replaced
 ;; Should also call mark-task-performed
 (def add-part-to-bill-request
-  {:appointment-id ""
-   :part-id ""})
+  {:appointmentId ""
+   :partId ""})
 
 (def add-part-to-bill-response 200)
 
@@ -173,16 +173,16 @@
 ;; Add replacement_part task to additionally_scheduled
 ;; Should also call mark-task-performed
 (def add-task-request
-  {:task-id ""
-   :appointment-id ""})
+  {:taskId ""
+   :appointmentId ""})
 
 (def add-task-response 200)
 
 ;;; confirm task is performed - POST
 ;;
 (def mark-task-performed-request
-  {:task-id ""
-   :appointment-id ""})
+  {:taskId ""
+   :appointmentId ""})
 
 (def mark-task-performed-response 200)
 
@@ -191,23 +191,23 @@
 ;;; print service bill - POST
 ;; Get bill data, add pick-up timestamp to Appointment
 (def print-service-bill-request
-  {:appointment-id ""
-   :pick-up-time ""})
+  {:appointmentId ""
+   :pickUpTime ""})
 
 (def print-service-bill-response
   ;; car info already in store
-  {:customer-names [" " " "]
-   :tests [{:task-name ""
-            :time-to-complete ""
-            :labor-cost ""
-            :test-status ""}]
-   :replacements [{:task-name ""
-                   :time-to-complete ""
-                   :labor-cost ""
-                   :part-name ""
-                   :cost-of-part ""}]
-   :drop-off ""
-   :pick-up ""})
+  {:customerNames [" " " "]
+   :tests [{:taskName ""
+            :timeToComplete ""
+            :laborCost ""
+            :testStatus ""}]
+   :replacements [{:taskName ""
+                   :timeToComplete ""
+                   :laborCost ""
+                   :partName ""
+                   :costOfPart ""}]
+   :dropOff ""
+   :pickUp ""})
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -215,6 +215,6 @@
 ;;; appointment-dropped-off - POST
 ;; Add drop-off time to appointment
 (def appointment-dropped-off-request
-  {:appointment-id ""})
+  {:appointmentId ""})
 
 (def appointment-dropped-off-response 200)
