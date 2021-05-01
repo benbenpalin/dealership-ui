@@ -77,9 +77,9 @@
       [:input {:type "date" :id "date" :name "date"}]]
      [:input {:type "submit" :value "Complete Sale"}]]]))
 
-(defn sales-row [{:keys [vehicle-id make model year totalSold profit]}]
+(defn sales-row [{:keys [vehicleId make model year totalSold profit]}]
   [:tr
-   [:td vehicle-id]
+   [:td vehicleId]
    [:td make]
    [:td model]
    [:td year]

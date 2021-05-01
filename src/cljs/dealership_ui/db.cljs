@@ -8,7 +8,7 @@
             :package "No Package"}
      :sales-report {:start-date nil
                     :end-date nil
-                    :report [{:vehicle-id "1234"
+                    :report [{:vehicleId "1234"
                               :make "Subaru"
                               :model "Forest"
                               :year "2015"

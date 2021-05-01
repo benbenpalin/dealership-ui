@@ -88,14 +88,17 @@
   :pull-report
   (fn
     [{:keys [db]} _]
-    {:db (assoc db :package "shcmoo")
-     :http-xhrio {:method          :get
-                  :uri             (url "/api/report")
-                  :format          (ajax/json-request-format)
-                  :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success      [:update-report]
-                  :on-failure      [:failed-report]}}))
-
+    (let [start (get-in db [:sales-report :start-date])
+          end (get-in db [:sales-report :end-date])]
+      ;; TODO rewrite API to get params from query params
+      {:http-xhrio {:method          :get
+                    :uri             (url "/api/report")
+                    :body {:startDate start
+                           :endDate end}
+                    :format          (ajax/json-request-format)
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:update-report]
+                    :on-failure      [:failed-report]}})))
 
 
 
