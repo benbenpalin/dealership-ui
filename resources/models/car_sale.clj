@@ -135,12 +135,12 @@
 (def todays-appointments-request nil)
 
 (def todays-appointments-response
-  {:appointmentId ""
-   :color ""
-   :year ""
-   :make ""
-   :model ""
-   :vehicleId ""})
+  {:appointments [{:appointmentId ""
+                   :color ""
+                   :year ""
+                   :make ""
+                   :model ""
+                   :vehicleId ""}]})
 
 ;;; Get appointment tasks - GET
 ;; get tasks for selected appointment, and related info, from Scheduled table

@@ -34,6 +34,22 @@
                   :on-failure      [:failed-report]}}))
 
 (reg-event-db
+  :update-appointments
+  (fn [db [_ appointments]]
+    (merge db appointments)))
+
+(reg-event-fx
+  :get-appointments-on-load
+  (fn
+    [{:keys [db]} _]
+    {:http-xhrio {:method          :get
+                  :uri             (url "/api/appointments")
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:update-appointments]
+                  :on-failure      [:failed-report]}}))
+
+(reg-event-db
   :common/navigate
   (fn [db [_ match]]
     (let [old-match (:common/route db)
@@ -158,10 +174,9 @@
     (-> db :packages)))
 
 (reg-sub
-  :packages-load
+  :appointments
   (fn [db _]
-    (-> db :packages-load)))
-
+    (-> db :appointments)))
 
 (reg-sub
   :sale/customer-status

@@ -16,8 +16,8 @@
                               :profit 1000000.00}]}
      :dropOff {:appointmentId "23456"
                :success false}
-     :packages {}
-     :package-load false}))
+     :packages [{}]
+     :appointments [{}]}))
 
 
 

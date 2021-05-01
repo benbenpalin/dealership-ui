@@ -225,16 +225,19 @@
           [:select {:name "timeslot" :id "timeslot"}
            (map make-option time-slots)]]])]]))
 
-(def appointments [{:id "123" :car "Gray 2015 Subaru Forester"} {:id "234" :car "Black 2020 VW Bus"}])
+(def appointments @(rf/subscribe [:appointments]))
 
 (def part "Spark Plug")
+
+
 
 (defn select-appointment [event]
   [:div
    (for [a appointments]
-     [:div
-      [:span {:style {:color "blue" :cursor "pointer"} :on-click  #(rf/dispatch [event (:id a)])} (:id a)]
-      [:span (:car a)]])])
+     (let [{appointmentId :appointmentId color :color year :year make :make model :model vehicleId :vehicleId} a]
+       [:div
+        [:span {:style {:color "blue" :cursor "pointer"} :on-click  #(rf/dispatch [event appointmentId])} appointmentId]
+        [:span (str " " color " " year " " make " " model " ")]]))])
 
 (defn update-page []
   [:section.section>div.container>div.content
@@ -320,6 +323,7 @@
 (defn init! []
   (rf/dispatch-sync [:initialize-db])
   (rf/dispatch-sync [:get-packages-on-load])
+  (rf/dispatch-sync [:get-appointments-on-load])
   (start-router!)
   (ajax/load-interceptors!)
   (mount-components))
