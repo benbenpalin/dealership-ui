@@ -61,7 +61,7 @@
 (def get-packages-request nil)
 
 (def get-packages-response
-   :packages [{:name "" :packageId ""}])
+   {:packages [{:name "" :packageId ""}]})
 
 ;;; Get Vehicle Types (on car not in system) - GET
 ;; pulls (ordered) the makes and models  and years in Vehicle_Type table

@@ -77,40 +77,44 @@
       [:input {:type "date" :id "date" :name "date"}]]
      [:input {:type "submit" :value "Complete Sale"}]]]))
 
-(def sales-data
- [{:vehicle-id "1234" :make "Subaru" :model "Forester" :year 2015 :total-sold 100 :profit 100000}
-  {:vehicle-id "2345" :make "VW" :model "Beatle" :year 1965 :total-sold 20 :profit 200000}])
-
-(defn sales-row [{:keys [vehicle-id make model year total-sold profit]}]
+(defn sales-row [{:keys [vehicle-id make model year totalSold profit]}]
   [:tr
    [:td vehicle-id]
    [:td make]
    [:td model]
    [:td year]
-   [:td total-sold]
+   [:td totalSold]
    [:td profit]])
 
 (defn report-page []
-  [:section.section>div.container>div.content
-   [:h1 "Report"]
-   [:div
-    [:form
+  (let [report @(rf/subscribe [:sales-report/report])
+        start-date @(rf/subscribe [:sales-report/start-date])
+        end-date @(rf/subscribe [:sales-report/end-date])]
+
+    [:section.section>div.container>div.content
+     [:h1 "Report"]
      [:div
-      [:label {:for "startDate"} "Start Date"]
-      [:input {:type "date" :id "startDate" :name "startDate"}]]
+      [:form
+       [:div
+        [:label {:for "startDate"} "Start Date"]
+        [:input {:type "date" :id "startDate" :name "startDate" :value start-date
+                 :on-change #(rf/dispatch [:set-start-date (-> % .-target .-value)])}]]
+       [:div
+        [:label {:for "endDate"} "End Date"]
+        [:input {:type "date" :id "endDate" :name "endDate" :value end-date
+                 :on-change #(rf/dispatch [:set-end-date (-> % .-target .-value)])}]]
+       [:div
+        [:button {:type "submit" :on-click #(rf/dispatch [:in-between])} "HEY"]]]]
      [:div
-      [:label {:for "endDate"} "End Date"]
-      [:input {:type "date" :id "endDate" :name "endDate"}]]]]
-   [:div
-    [:table
-     [:tr
-      [:th "Vehicle Id"]
-      [:th "Make"]
-      [:th "Model"]
-      [:th "Year"]
-      [:th "Total Sold"]
-      [:th "Profit"]]
-     (map sales-row sales-data)]]])
+      [:table
+       [:tr
+        [:th "Vehicle Id"]
+        [:th "Make"]
+        [:th "Model"]
+        [:th "Year"]
+        [:th "Total Sold"]
+        [:th "Profit"]]
+       (map sales-row report)]]]))
 
 (def make-list ["Subaru" "BMX" "VW"])
 

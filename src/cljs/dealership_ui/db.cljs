@@ -5,5 +5,16 @@
     {:sale {:customer-status "existing"}
      :book {:customer-status "existing"
             :car-status "existing"
-            :package "No Package"}}))
+            :package "No Package"}
+     :sales-report {:start-date nil
+                    :end-date nil
+                    :report [{:vehicle-id "1234"
+                              :make "Subaru"
+                              :model "Forest"
+                              :year "2015"
+                              :totalSold 100
+                              :profit 1000000.00}]}}))
+
+
+
 

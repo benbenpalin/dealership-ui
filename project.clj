@@ -11,6 +11,7 @@
                  [cprop "0.1.17"]
                  [day8.re-frame/http-fx "0.2.3"]
                  [day8.re-frame/re-frame-10x "1.0.2"]
+                 [day8.re-frame/fetch-fx "0.0.1"]
                  [expound "0.8.9"]
                  [funcool/struct "1.4.0"]
                  [luminus-transit "0.1.2"]

@@ -6,6 +6,11 @@
     [reitit.frontend.easy :as rfe]
     [reitit.frontend.controllers :as rfc]))
 
+;; Helpers
+
+(defn url [end-point]
+  (str "http://localhost:4567" end-point))
+
 ;;dispatchers
 
 (reg-event-db
@@ -53,6 +58,47 @@
   (fn [db [_ package]]
     (assoc-in db [:book :package] package)))
 
+;; Report
+(reg-event-db
+  :set-start-date
+  (fn [db [_ start]]
+    (assoc-in db [:sales-report :start-date] start)))
+
+(reg-event-db
+  :set-end-date
+  (fn [db [_ end]]
+    (assoc-in db [:sales-report :end-date] end)))
+
+(reg-event-db
+  :update-report
+  (fn [db [_ result]]
+    (assoc-in db [:sales-report :report] [result])))
+
+(reg-event-db
+  :failed-report
+  (fn [db _] db))
+
+(reg-event-fx
+  :in-between
+  (fn [{:keys [db]} _]
+    {:dispatch [:pull-report]}))
+
+
+(reg-event-fx
+  :pull-report
+  (fn
+    [{:keys [db]} _]
+    {:db (assoc db :package "shcmoo")
+     :http-xhrio {:method          :get
+                  :uri             (url "/api/report")
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:update-report]
+                  :on-failure      [:failed-report]}}))
+
+
+
+
 ;;subscriptions
 
 (reg-sub
@@ -79,6 +125,22 @@
   :book/package
   (fn [db _]
     (-> db :book :package)))
+
+(reg-sub
+  :sales-report/report
+  (fn [db _]
+    (-> db :sales-report :report)))
+
+(reg-sub
+  :sales-report/start-date
+  (fn [db _]
+    (-> db :sales-report :start-date)))
+
+(reg-sub
+  :sales-report/end-date
+  (fn [db _]
+    (-> db :sales-report :end-date)))
+;;;;;;;;;;;;;;;;;;;;;
 
 (reg-sub
   :common/page-id
