@@ -17,6 +17,21 @@
   :initialize-db
   (fn [_ _]
     db/default-db))
+(reg-event-db
+  :update-packages
+  (fn [db [_ packages]]
+    (merge db packages)))
+
+(reg-event-fx
+  :get-packages-on-load
+  (fn
+    [{:keys [db]} _]
+    {:http-xhrio {:method          :get
+                  :uri             (url "/api/packages")
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:update-packages]
+                  :on-failure      [:failed-report]}}))
 
 (reg-event-db
   :common/navigate
@@ -57,6 +72,17 @@
   :change-package
   (fn [db [_ package]]
     (assoc-in db [:book :package] package)))
+
+(reg-event-fx
+  :get-packages
+  (fn
+    [{:keys [db]} _]
+    {:http-xhrio {:method          :get
+                  :uri             (url "/api/packages")
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:update-report]
+                  :on-failure      [:failed-report]}}))
 
 ;; Report
 (reg-event-db
@@ -99,7 +125,7 @@
                     :on-success      [:update-report]
                     :on-failure      [:failed-report]}})))
 
-;;;
+;;; dropoff
 (reg-event-db
   :dropoff-success
   (fn [db _]
@@ -125,6 +151,17 @@
   :common/route
   (fn [db _]
     (-> db :common/route)))
+
+(reg-sub
+  :packages
+  (fn [db _]
+    (-> db :packages)))
+
+(reg-sub
+  :packages-load
+  (fn [db _]
+    (-> db :packages-load)))
+
 
 (reg-sub
   :sale/customer-status

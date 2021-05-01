@@ -35,7 +35,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; report api
-;; get report - GET
+;; get report - GET - DONE
 ;; no updates or insertions
 ; pulls data
 (def get-report-request
@@ -56,7 +56,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Book Service Appointment Api
 
-;;; Get Vehicle Types and packages ON LOAD- GET
+;;; Get packages ON LOAD- GET
 ;; pulls all packages
 (def get-packages-request nil)
 

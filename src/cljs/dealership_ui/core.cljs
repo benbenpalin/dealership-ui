@@ -122,8 +122,6 @@
 
 (def year-list [2015 2016 2017])
 
-(def packages ["No Package" "1 year" "2 year" "3 year"])
-
 (def package-tasks ["brake test" "fluid test" "brake replacement" "spark plug replacement" "oil change"])
 
 (def all-tasks ["brake test" "fluid test" "brake replacement" "spark plug replacement" "oil change" "smoke test" "tire test" "tire replacement" "engine replacement" "wiper change"])
@@ -132,6 +130,11 @@
 
 (defn make-option [option]
   [:option {:value option} option])
+
+(defn make-package-option [{:keys [packageId name]} packages]
+  (do
+    (println "make")
+    [:option {:value packageId} name]))
 
 (defn make-checkbox [item]
   [:div
@@ -142,7 +145,8 @@
 (defn book-page []
   (let [customer-status @(rf/subscribe [:book/customer-status])
         car-status @(rf/subscribe [:book/car-status])
-        package @(rf/subscribe [:book/package])]
+        package @(rf/subscribe [:book/package])
+        packages @(rf/subscribe [:packages])]
     [:section.section>div.container>div.content
      [:h1 "Book Service Appointment"]
      [:div
@@ -196,7 +200,7 @@
        [:select {:name "package"
                  :id "package"
                  :on-change #(rf/dispatch [:change-package (-> % .-target .-value)])}
-        (map make-option packages)]]
+        (map make-package-option packages)]]
       ;; Once a package is selected, user will see services included in that package and can choose to uncheck them
       (if (not= package "No Package")
         [:div
@@ -315,6 +319,7 @@
 
 (defn init! []
   (rf/dispatch-sync [:initialize-db])
+  (rf/dispatch-sync [:get-packages-on-load])
   (start-router!)
   (ajax/load-interceptors!)
   (mount-components))
