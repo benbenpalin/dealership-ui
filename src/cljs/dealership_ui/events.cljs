@@ -93,8 +93,8 @@
       ;; TODO rewrite API to get params from query params
       {:http-xhrio {:method          :get
                     :uri             (url "/api/report")
-                    :body {:startDate start
-                           :endDate end}
+                    :params {:startDate start
+                             :endDate end}
                     :format          (ajax/json-request-format)
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:update-report]
