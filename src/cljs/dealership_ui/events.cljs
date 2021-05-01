@@ -90,7 +90,6 @@
     [{:keys [db]} _]
     (let [start (get-in db [:sales-report :start-date])
           end (get-in db [:sales-report :end-date])]
-      ;; TODO rewrite API to get params from query params
       {:http-xhrio {:method          :get
                     :uri             (url "/api/report")
                     :params {:startDate start
@@ -100,6 +99,24 @@
                     :on-success      [:update-report]
                     :on-failure      [:failed-report]}})))
 
+;;;
+(reg-event-db
+  :dropoff-success
+  (fn [db _]
+    (assoc-in db [:dropoff :success] true)))
+
+(reg-event-fx
+  :dropoff-car
+  (fn
+    [{:keys [db]} [_ appointmentId]]
+    {:db (assoc db :dopoph appointmentId)
+     :http-xhrio {:method          :post
+                  :uri             (url "/api/dropoff")
+                  :params {:appointmentId appointmentId}
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:update-report]
+                  :on-failure      [:failed-report]}}))
 
 
 ;;subscriptions

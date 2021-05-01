@@ -13,7 +13,9 @@
                               :model "Forest"
                               :year "2015"
                               :totalSold 100
-                              :profit 1000000.00}]}}))
+                              :profit 1000000.00}]}
+     :dropOff {:appointmentId "23456"
+               :success false}}))
 
 
 

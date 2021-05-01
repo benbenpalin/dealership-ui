@@ -225,18 +225,18 @@
 
 (def part "Spark Plug")
 
-(defn select-appointment []
+(defn select-appointment [event]
   [:div
    (for [a appointments]
      [:div
-      [:a {:href "https://www.google.com"} (:id a)]
+      [:span {:style {:color "blue" :cursor "pointer"} :on-click  #(rf/dispatch [event (:id a)])} (:id a)]
       [:span (:car a)]])])
 
 (defn update-page []
   [:section.section>div.container>div.content
    [:h1 "Update Service Record"]
    [:div
-    [select-appointment]
+    [select-appointment :tbd]
     [:div
      [:div "Select a Task to Update"]
      (for [t package-tasks]
@@ -257,7 +257,7 @@
   [:section.section>div.container>div.content
    [:h1 "Bill"]
    [:div
-    [select-appointment]
+    [select-appointment :tbd]
     [:a "End Appointment and Create Bill"]
     [:div "BILL"]]])
     ;In bill
@@ -275,7 +275,7 @@
    [:h1 "Arrival"]
    [:div
     [:div "Which appointment has arrived?"]
-    [select-appointment]]])
+    [select-appointment :dropoff-car]]])
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
