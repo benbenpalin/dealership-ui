@@ -50,6 +50,22 @@
                   :on-failure      [:failed-report]}}))
 
 (reg-event-db
+  :update-vehicle-types
+  (fn [db [_ vehicle-types]]
+    (merge db vehicle-types)))
+
+(reg-event-fx
+  :get-vehicle-types-on-load
+  (fn
+    [{:keys [db]} _]
+    {:http-xhrio {:method          :get
+                  :uri             (url "/api/vehicletypes")
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:update-vehicle-types]
+                  :on-failure      [:failed-report]}}))
+
+(reg-event-db
   :common/navigate
   (fn [db [_ match]]
     (let [old-match (:common/route db)
@@ -177,6 +193,11 @@
   :appointments
   (fn [db _]
     (-> db :appointments)))
+
+(reg-sub
+  :vehicleTypes
+  (fn [db _]
+    (-> db :vehicleTypes)))
 
 (reg-sub
   :sale/customer-status

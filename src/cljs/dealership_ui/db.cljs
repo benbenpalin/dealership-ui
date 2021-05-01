@@ -17,7 +17,8 @@
      :dropOff {:appointmentId "23456"
                :success false}
      :packages [{}]
-     :appointments [{}]}))
+     :appointments [{}]
+     :vehicleTypes [{}]}))
 
 
 

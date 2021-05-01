@@ -141,12 +141,15 @@
    [:input {:type "checkbox" :id item :name item :value item}]
    [:label {:for item} item]])
 
+(defn make-vehicle-type-option [{:keys [make model year vehicleId]}]
+  [:option {:value vehicleId} (str make " " model " " year)])
 
 (defn book-page []
   (let [customer-status @(rf/subscribe [:book/customer-status])
         car-status @(rf/subscribe [:book/car-status])
         package @(rf/subscribe [:book/package])
-        packages @(rf/subscribe [:packages])]
+        packages @(rf/subscribe [:packages])
+        vehicleTypes @(rf/subscribe [:vehicleTypes])]
     [:section.section>div.container>div.content
      [:h1 "Book Service Appointment"]
      [:div
@@ -181,13 +184,7 @@
          [:form
           [:label {:for "make"} "Make"]
           [:select {:name "make" :id "make"}
-           (map make-option make-list)]
-          [:label {:for "model"} "Model"]
-          [:select {:name "model" :id "model"}
-           (map make-option model-list)]
-          [:label {:for "year"} "Year"]
-          [:select {:name "year" :id "year"}
-           (map make-option year-list)]
+           (map make-vehicle-type-option vehicleTypes)]
           [text-input "License Plate State" "plate-state"]
           [text-input "License Plate Number" "plate-number"]
           [text-input "Color" "color"]
@@ -324,6 +321,7 @@
   (rf/dispatch-sync [:initialize-db])
   (rf/dispatch-sync [:get-packages-on-load])
   (rf/dispatch-sync [:get-appointments-on-load])
+  (rf/dispatch-sync [:get-vehicle-types-on-load])
   (start-router!)
   (ajax/load-interceptors!)
   (mount-components))
