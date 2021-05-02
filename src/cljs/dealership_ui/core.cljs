@@ -55,6 +55,9 @@
    [text-input "State" "state"]
    [text-input "Zip Code" "zip"]])
 
+(def styles
+  {:button {:border "2px solid black" :max-width "100px"}})
+
 (defn home-page []
   (let [customer-status @(rf/subscribe [:sale/customer-status])]
    [:section.section>div.container>div.content
@@ -75,7 +78,7 @@
      [text-input "Sale Price" "price"]
      [:div
       [:input {:type "date" :id "date" :name "date"}]]
-     [:input {:type "submit" :value "Complete Sale"}]]]))
+     [:div {:style (:button styles) :on-click #(rf/dispatch [:in-between])} "Complete Purchase"]]]))
 
 (defn sales-row [{:keys [vehicleId make model year totalSold profit]}]
   [:tr
@@ -104,17 +107,19 @@
         [:input {:type "date" :id "endDate" :name "endDate" :value end-date
                  :on-change #(rf/dispatch [:set-end-date (-> % .-target .-value)])}]]
        [:div
-        [:button {:type "submit" :on-click #(rf/dispatch [:in-between])} "HEY"]]]]
+        ;;TODO get border working (probably make a class for buttons, since buttons suck)
+        [:div {:style (:button styles) :on-click #(rf/dispatch [:pull-report])} "Pull Report"]]]]
      [:div
       [:table
-       [:tr
+       [:thead
         [:th "Vehicle Id"]
         [:th "Make"]
         [:th "Model"]
         [:th "Year"]
         [:th "Total Sold"]
         [:th "Profit"]]
-       (map sales-row report)]]]))
+       [:tbody
+        (map sales-row report)]]]]))
 
 (def make-list ["Subaru" "BMX" "VW"])
 
@@ -132,9 +137,7 @@
   [:option {:value option} option])
 
 (defn make-package-option [{:keys [packageId name]} packages]
-  (do
-    (println "make")
-    [:option {:value packageId} name]))
+  [:option {:value packageId} name])
 
 (defn make-checkbox [{:keys [taskName taskId]}]
   [:div
