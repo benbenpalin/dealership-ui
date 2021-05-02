@@ -222,40 +222,45 @@
           [:select {:name "timeslot" :id "timeslot"}
            (map make-option time-slots)]]])]]))
 
-(def appointments @(rf/subscribe [:appointments]))
-
 (def part "Spark Plug")
 
 
-
 (defn select-appointment [event]
-  [:div
-   (for [a appointments]
-     (let [{appointmentId :appointmentId color :color year :year make :make model :model vehicleId :vehicleId} a]
-       [:div
-        [:span {:style {:color "blue" :cursor "pointer"} :on-click  #(rf/dispatch [event appointmentId])} appointmentId]
-        [:span (str " " color " " year " " make " " model " ")]]))])
+  (let  [appointments @(rf/subscribe [:appointments])]
+    [:div
+     (for [a appointments]
+       (let [{appointmentId :appointmentId color :color year :year make :make model :model vehicleId :vehicleId} a]
+         [:div
+          [:span {:style {:color "blue" :cursor "pointer"} :on-click  #(rf/dispatch [event appointmentId])} appointmentId]
+          [:span (str " " color " " year " " make " " model " ")]]))]))
 
 (defn update-page []
-  [:section.section>div.container>div.content
-   [:h1 "Update Service Record"]
-   [:div
-    [select-appointment :tbd]
-    [:div
-     [:div "Select a Task to Update"]
-     (for [t package-tasks]
+  (let [update-tasks @(rf/subscribe [:updateTasks])
+        test-tasks (:tests update-tasks)
+        replacement-tasks (:partReplacements update-tasks)]
+    [:section.section>div.container>div.content
+     [:h1 "Update Service Record"]
+     [:div
+      [select-appointment :get-appointment-tasks]
+      [:div
+       [:div "Select a Task to Update"]
        [:div
-        [:a {:href "https://www.google.com"} t]])
-     [:div "(for part replacement)"]
-     [:a {:href "https://www.google.com"} "Add " part " $20.00" " to Bill and Mark Replacement Complete?"]]
-    [:br]
-    [:div
-     [:div "(for test)"]
-     [:div "Did the test pass?"]
-     [:a {:href "https://www.google.com"} "Yes"]
-     [:a {:href "https://www.google.com"} "No"]
-     [:div (str "Part to replace, due to failure: " part)]
-     [:a {:href "https://www.google.com"} (str "Add " "Spark Plug Replacement " "to tasks?")]]]])
+        [:h3 "Part Replacements"]
+        [:div (for [t replacement-tasks]
+                [:div {:on-click #(%)} (:taskName t)])]
+        [:div "(once one is clicked)"]
+        [:a {:href "https://www.google.com"} "Add " part " $20.00" " to Bill and Mark Replacement Complete?"]]]
+      [:br]
+      [:div
+       [:h3 "Tests"]
+       [:div (for [t test-tasks]
+               [:div {:on-click #(%)} (:taskName t)])]
+       [:div "(once test is clicked)"]
+       [:div "Did the test pass?"]
+       [:a {:href "https://www.google.com"} "Yes"]
+       [:a {:href "https://www.google.com"} "No"]
+       [:div (str "Part to replace, due to failure: " part)]
+       [:a {:href "https://www.google.com"} (str "Add " "Spark Plug Replacement " "to tasks?")]]]]))
 
 (defn bill-page []
   [:section.section>div.container>div.content

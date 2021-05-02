@@ -157,6 +157,24 @@
                     :on-success      [:update-report]
                     :on-failure      [:failed-report]}})))
 
+;;; Update Service Record
+(reg-event-fx
+  :get-appointment-tasks
+  (fn
+    [{:keys [db]} [appointmentId _]]
+    {:http-xhrio {:method          :get
+                  :uri             (url "/api/appointmenttasks")
+                  :params {:appointmentId appointmentId}
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:update-update-tasks]
+                  :on-failure      [:failed-report]}}))
+
+(reg-event-db
+  :update-update-tasks
+  (fn [db [_ result]]
+    (assoc db :updateTasks result)))
+
 ;;; dropoff
 (reg-event-db
   :dropoff-success
@@ -233,6 +251,11 @@
   :sales-report/end-date
   (fn [db _]
     (-> db :sales-report :end-date)))
+
+(reg-sub
+  :updateTasks
+  (fn [db _]
+    (-> db :updateTasks)))
 ;;;;;;;;;;;;;;;;;;;;;
 
 (reg-sub

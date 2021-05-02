@@ -152,11 +152,11 @@
             :taskName ""
             :testFailureTaskId ""
             :testFailureTaskName ""}]
-   :partReplacement [{:taskId ""
-                      :taskName ""
-                      :partId ""
-                      :partName ""
-                      :costOfPart ""}]})
+   :partReplacements [{:taskId ""
+                       :taskName ""
+                       :partId ""
+                       :partName ""
+                       :costOfPart ""}]})
 
 
 

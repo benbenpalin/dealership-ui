@@ -6,16 +6,12 @@
      :book {:customer-status "existing"
             :car-status "existing"
             :package "No Package"}
-     :sales-report {:start-date nil
-                    :end-date nil
-                    :report [{:vehicleId "1234"
-                              :make "Subaru"
-                              :model "Forest"
-                              :year "2015"
-                              :totalSold 100
-                              :profit 1000000.00}]}
+     :sales-report {}
      :dropOff {:appointmentId "23456"
                :success false}
+     :updateTasks {:appointmentId ""}
+
+
      :packages [{}]
      :appointments [{}]
      :vehicleTypes [{}]}))
