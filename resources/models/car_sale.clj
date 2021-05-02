@@ -83,10 +83,10 @@
 (def get-tasks-response
   {:tasksInPackage [{:taskId ""
                      :taskName ""
-                     :estdTime}]
+                     :estdTime ""}]
    :tasksNotInPackage [{:taskId ""
                         :taskName ""
-                        :estdTime}]})
+                        :estdTime ""}]})
 
 ;;; get timeslot - GET
 ;; Total estimated time of selected tasks, and get timeslots that work

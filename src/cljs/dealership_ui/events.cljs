@@ -100,21 +100,31 @@
   (fn [db [_ status]]
     (assoc-in db [:book :car-status] status)))
 
-(reg-event-db
+(reg-event-fx
   :change-package
-  (fn [db [_ package]]
-    (assoc-in db [:book :package] package)))
+  (fn [{:keys [db]} [_ packageId]]
+    {:db (assoc-in db [:book :package] packageId)
+     :dispatch [:get-package-tasks packageId]}))
+
+
+
 
 (reg-event-fx
-  :get-packages
+  :get-package-tasks
   (fn
-    [{:keys [db]} _]
+    [{:keys [db]} [_ packageId]]
     {:http-xhrio {:method          :get
-                  :uri             (url "/api/packages")
+                  :uri             (url "/api/tasksinpackage")
+                  :params {:packageId packageId}
                   :format          (ajax/json-request-format)
                   :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success      [:update-report]
+                  :on-success      [:update-package-tasks]
                   :on-failure      [:failed-report]}}))
+
+(reg-event-db
+  :update-package-tasks
+  (fn [db [_ result]]
+    (assoc db :packageTasks result)))
 
 ;; Report
 (reg-event-db
@@ -201,6 +211,11 @@
   :common/route
   (fn [db _]
     (-> db :common/route)))
+
+(reg-sub
+  :packageTasks
+  (fn [db _]
+    (-> db :packageTasks)))
 
 (reg-sub
   :packages

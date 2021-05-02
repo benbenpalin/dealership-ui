@@ -136,10 +136,10 @@
     (println "make")
     [:option {:value packageId} name]))
 
-(defn make-checkbox [item]
+(defn make-checkbox [{:keys [taskName taskId]}]
   [:div
-   [:input {:type "checkbox" :id item :name item :value item}]
-   [:label {:for item} item]])
+   [:input {:type "checkbox" :id taskId :name taskName :value taskId}]
+   [:label {:for taskId} taskName]])
 
 (defn make-vehicle-type-option [{:keys [make model year vehicleId]}]
   [:option {:value vehicleId} (str make " " model " " year)])
@@ -149,7 +149,8 @@
         car-status @(rf/subscribe [:book/car-status])
         package @(rf/subscribe [:book/package])
         packages @(rf/subscribe [:packages])
-        vehicleTypes @(rf/subscribe [:vehicleTypes])]
+        vehicleTypes @(rf/subscribe [:vehicleTypes])
+        package-tasks @(rf/subscribe [:packageTasks])]
     [:section.section>div.container>div.content
      [:h1 "Book Service Appointment"]
      [:div
@@ -199,16 +200,16 @@
                  :on-change #(rf/dispatch [:change-package (-> % .-target .-value)])}
         (map make-package-option packages)]]
       ;; Once a package is selected, user will see services included in that package and can choose to uncheck them
-      (if (not= package "No Package")
+      (if (not= package 0)
         [:div
          [:div "Remove any unwanted tasks"]
          [:form
-           (map make-checkbox package-tasks)]
+           (map make-checkbox (:inPackage package-tasks))]
          ;; In all cases, user can add more tasks
          [:br]
          [:div "Add any additional services"]
          [:form
-          (map make-checkbox (vec (cset/difference (set all-tasks) (set package-tasks))))]
+          (map make-checkbox (:notInPackage package-tasks))]
          ;; calculate total time for appointment
          [:br]
          ;; only show dates with available timeslots of that length (rounded up)
