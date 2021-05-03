@@ -141,6 +141,15 @@
      :dispatch [:get-package-tasks packageId]}))
 
 (reg-event-db
+  :update-check
+  (fn [db [_ taskPackageRelation taskId prev-checked]]
+    (update-in db [:packageTasks taskPackageRelation]
+               (fn [v]
+                 (map #(if (= (:taskId %) taskId) (assoc % :checked (not prev-checked)) %) v)))))
+
+;;;
+
+(reg-event-db
   :update-sale-customer-1-value
   (fn [db [_ k v]]
     (assoc-in db [:sale :customer :newCustomer1 k] v)))
@@ -206,7 +215,9 @@
 (reg-event-db
   :update-package-tasks
   (fn [db [_ result]]
-    (assoc db :packageTasks result)))
+     (let [new-result (update result :inPackage (fn [m] (map #(assoc % :checked true) m)))
+           final-result (update new-result :notInPackage (fn [m] (map #(assoc % :checked false) m)))]
+      (assoc db :packageTasks final-result))))
 
 ;; Report
 (reg-event-db
