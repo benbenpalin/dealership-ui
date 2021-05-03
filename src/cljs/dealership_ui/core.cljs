@@ -185,6 +185,7 @@
 (defn book-page []
   (let [customer-status @(rf/subscribe [:book/customer-status])
         car-status @(rf/subscribe [:book/car-status])
+        numCust @(rf/subscribe [:book/:number-of-customers])
         package @(rf/subscribe [:book/package])
         packages @(rf/subscribe [:packages])
         vehicleTypes @(rf/subscribe [:vehicleTypes])
@@ -200,13 +201,23 @@
        [:option {:value "new"} "New Customer"]]
       ;New Customer
       ;For new customer only customer data
-      ;; TODO add ability to add another customer
-      (if (= customer-status "new")
+      (when (= customer-status "new")
         [:div
+         [:div
+          [:label {:for "numberOfCustomers"} "How Many New Customers"]
+          [:select {:name "numberOfCustomers"
+                    :id "numberOfCustomers"
+                    :on-change #(rf/dispatch [:change-book-number-of-customers (-> % .-target .-value)])}
+           [:option {:value "one"} "One"]
+           [:option {:value "two"} "Two"]]]
          [:div "Enter new customer data"]
          [:form
-          [new-customer-inputs]]]
-        [text-input "Customer ID" "customerId" :none])
+          [new-customer-inputs :update-book-customer-1-value]]
+         (when (= numCust "two")
+           [:div
+            [:br]
+            [:div "Second Customer Information"]
+            [new-customer-inputs :update-sale-customer-2-value]])])
       [:br]
       [:form
        [:label {:for "carStatus"} "Car Status"]
@@ -218,17 +229,18 @@
       ;; For new customer or existing customer with new car
       (if (= car-status "new")
         [:div
-         ;; TODO make this just one drop down with vehicle types
          [:div "Enter new car data"]
          [:form
           [:label {:for "make"} "Make"]
-          [:select {:name "make" :id "make"}
+          [:select {:name "make" :id "make"
+                    :on-change #(rf/dispatch [:update-book-vehicle-id (-> % .-target .-value)])}
+           [:option {:value "no car"}]
            (map make-vehicle-type-option vehicleTypes)]
-          [text-input "License Plate State" "plate-state" :none]
-          [text-input "License Plate Number" "plate-number" :none]
-          [text-input "Color" "color" :none]
-          [text-input "Odometer" "odometer" :none]]]
-        [text-input "Car ID" "carId" :none])
+          [text-input "License Plate State" :licensePlateState :update-book-car-value]
+          [text-input "License Plate Number" :licensePlateNumber :update-book-car-value]
+          [text-input "Color" :color :update-book-car-value]
+          [text-input "Odometer" :odometer :update-book-car-value]]]
+        [text-input "Car ID" :carId :update-book-car-value])
       [:br]
       ;; All Cases: selects package
       [:form

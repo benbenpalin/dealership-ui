@@ -105,9 +105,34 @@
     (assoc-in db [:book :customer-status] status)))
 
 (reg-event-db
+  :change-book-number-of-customers
+  (fn [db [_ status]]
+    (assoc-in db [:book :number-of-customers] status)))
+
+(reg-event-db
   :change-book-car-status
   (fn [db [_ status]]
     (assoc-in db [:book :car-status] status)))
+
+(reg-event-db
+  :update-book-customer-1-value
+  (fn [db [_ k v]]
+    (assoc-in db [:book :customer :newCustomer1 k] v)))
+
+(reg-event-db
+  :update-book-customer-2-value
+  (fn [db [_ k v]]
+    (assoc-in db [:book :customer :newCustomer2 k] v)))
+
+(reg-event-db
+  :update-book-vehicle-id
+  (fn [db [_ v]]
+    (assoc-in db [:book :car :vehicleId] v)))
+
+(reg-event-db
+  :update-book-car-value
+  (fn [db [_ k v]]
+    (assoc-in db [:book :car k] v)))
 
 (reg-event-fx
   :change-package
@@ -318,6 +343,11 @@
   :book/car-status
   (fn [db _]
     (-> db :book :car-status)))
+
+(reg-sub
+  :book/:number-of-customers
+  (fn [db _]
+    (-> db :book :number-of-customers)))
 
 (reg-sub
   :book/package
