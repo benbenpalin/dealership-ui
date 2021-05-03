@@ -7,6 +7,7 @@
                  [binaryage/devtools "1.0.3"]
                  [cljs-ajax "0.8.3"]
                  [clojure.java-time "0.3.2"]
+                 [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.cognitect/transit-clj "1.0.324"]
                  [cprop "0.1.17"]
                  [day8.re-frame/http-fx "0.2.3"]

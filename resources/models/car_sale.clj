@@ -23,7 +23,7 @@
   ;;Bill
   {:customerNames ["", ""]
    :purchaseId ""
-   ;:date-of-sale "" ;; already in store
+   :date-of-sale "" ;; already in store
    ;:sale-price "" ;; already in store
    :make ""
    :model ""

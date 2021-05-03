@@ -10,7 +10,9 @@
     [reitit.core :as reitit]
     [reitit.frontend.easy :as rfe]
     [clojure.string :as string]
-    [clojure.set :as cset])
+    [clojure.set :as cset]
+    [cljs-time.core :as time]
+    [cljs-time.format :as timef])
   (:import goog.History))
 
 (defn nav-link [uri title page]
@@ -58,6 +60,19 @@
 (def styles
   {:button {:border "2px solid black" :max-width "100px"}})
 
+(defn sale-bill []
+  (let [{:keys [customerNames purchaseId dateOfSale make model year color licensePlateNumber licensePlateState]} @(rf/subscribe [:sale/bill])
+        sale-price @(rf/subscribe [:sale/salePrice])]
+    [:div
+     [:h4 "Bill"]
+     [:div (str dateOfSale)]
+     [:div (str "Customers: " (string/join ", " customerNames))]
+     [:div (str "PurchaseId: " purchaseId)]
+     [:div (str "Car Purchase: " year " " make " " model)]
+     [:div (str "Sale Price: $" sale-price)]
+     [:div (str "Color: " color)]
+     [:div (str "License Plate: " licensePlateState " " licensePlateNumber)]]))
+
 (defn home-page []
   (let [customer-status @(rf/subscribe [:sale/customer-status])
         num-cust @(rf/subscribe [:sale/number-of-customers])]
@@ -97,7 +112,8 @@
      [text-input "Car ID" :carId :update-sale-val]
      [text-input "Sale Price" :salePrice :update-sale-val]
      [:br]
-     [:div {:style (:button styles) :on-click #(rf/dispatch [:submit-purchase])} "Complete Purchase"]]]))
+     [:div {:style (:button styles) :on-click #(rf/dispatch [:submit-purchase])} "Complete Purchase"]]
+    [sale-bill]]))
 
 (defn sales-row [{:keys [vehicleId make model year totalSold profit]}]
   [:tr

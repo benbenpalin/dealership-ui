@@ -155,7 +155,8 @@
                                                                 []
                                                                 [(:customerId1 customer) (:customerId2 customer)])
                                                  :newCustomers (if isNew
-                                                                 [(:newCustomer1 customer) (:newCustomer2 customer)])}
+                                                                 [(:newCustomer1 customer) (:newCustomer2 customer)]
+                                                                 [])}
                                       :carId (:carId sale)
                                       :salePrice (:salePrice sale)}
                     :format          (ajax/json-request-format)
@@ -272,6 +273,16 @@
   :sale/number-of-customers
   (fn [db _]
     (-> db :sale :number-of-customers)))
+
+(reg-sub
+  :sale/bill
+  (fn [db _]
+    (-> db :sale :bill)))
+
+(reg-sub
+  :sale/salePrice
+  (fn [db _]
+    (-> db :sale :salePrice)))
 
 (reg-sub
   :packageTasks
