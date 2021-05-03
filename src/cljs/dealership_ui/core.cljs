@@ -39,46 +39,65 @@
                  [nav-link "#/bill" "Bill" :bill]
                  [nav-link "#/arrival" "Arrival" :arrival]]]]))
 
-(defn text-input [label id]
+(defn text-input [label id event]
   [:div
    [:label {:for id} label]
-   [:input {:type "text" :id id :name id}]])
+   [:input {:type "text" :id id :name id :on-change #(rf/dispatch [event id (-> % .-target .-value)])}]])
 
-(defn new-customer-inputs []
+(defn new-customer-inputs [event]
   [:div
-   [text-input "First Name" "fame"]
-   [text-input "Midde Initial" "minit"]
-   [text-input "Last Name" "lname"]
-   [text-input "Phone Number" "phone"]
-   [text-input "Street Address" "address"]
-   [text-input "City" "city"]
-   [text-input "State" "state"]
-   [text-input "Zip Code" "zip"]])
+   [text-input "First Name" :firstName event]
+   [text-input "Midde Initial" :middleInitial event]
+   [text-input "Last Name" :lastName event]
+   [text-input "Phone Number" :phoneNumber event]
+   [text-input "Street Address" :streetAddress event]
+   [text-input "City" :city event]
+   [text-input "State" :state event]
+   [text-input "Zip Code" :zipcode event]])
 
 (def styles
   {:button {:border "2px solid black" :max-width "100px"}})
 
 (defn home-page []
-  (let [customer-status @(rf/subscribe [:sale/customer-status])]
+  (let [customer-status @(rf/subscribe [:sale/customer-status])
+        num-cust @(rf/subscribe [:sale/number-of-customers])]
    [:section.section>div.container>div.content
     [:h1 "Car Sale"]
     ;; TODO add ability to add another customer
     [:div
-     [:label {:for "customerStatus"} "Customer Status"]
+     [:label {:for "numberOfCustomers"} "How Many Purchasers"]
+     [:select {:name "numberOfCustomers"
+               :id "numberOfCustomers"
+               :on-change #(rf/dispatch [:change-number-of-customers (-> % .-target .-value)])}
+      [:option {:value "one"} "One"]
+      [:option {:value "two"} "Two"]]]
+    [:dev
+     [:label {:for "customerStatus"} "Status of Customer(s)"]
      [:select {:name "customerStatus"
                :id "customerStatus"
                :on-change #(rf/dispatch [:change-sale-customer-status (-> % .-target .-value)])}
-      [:option {:value "existing"} "Existing Customer"]
-      [:option {:value "new"} "New Customer"]]]
+      [:option {:value "existing"} "Existing"]
+      [:option {:value "new"} "New"]]
+     [:br]]
+    [:div {:style {:margin-top "20px"}} "Input Customer Information"]
     [:form
      (if (= customer-status "new")
-       [new-customer-inputs]
-       [text-input "Customer ID" "customerID"])
-     [text-input "Car ID" "carId"]
-     [text-input "Sale Price" "price"]
-     [:div
-      [:input {:type "date" :id "date" :name "date"}]]
-     [:div {:style (:button styles) :on-click #(rf/dispatch [:in-between])} "Complete Purchase"]]]))
+       [:div
+        [new-customer-inputs :update-sale-customer-1-value]
+        (when (= num-cust "two")
+          [:div
+           [:br]
+           [:div "Second Customer Information"]
+           [new-customer-inputs :update-sale-customer-2-value]])]
+       [:div
+        [text-input "Customer ID" :customerId1 :update-sale-customer-val]
+        (when (= num-cust "two")
+          [text-input "2nd Customer ID" :customerId2 :update-sale-customer-val])])
+     [:br]
+     [text-input "Car ID" :carId :update-sale-val]
+     [text-input "Sale Price" :salePrice :update-sale-val]
+     [:br]
+     [:div {:style (:button styles) :on-click #(rf/dispatch [:submit-purchase])} "Complete Purchase"]]]))
 
 (defn sales-row [{:keys [vehicleId make model year totalSold profit]}]
   [:tr
@@ -171,7 +190,7 @@
          [:div "Enter new customer data"]
          [:form
           [new-customer-inputs]]]
-        [text-input "Customer ID" "customerId"])
+        [text-input "Customer ID" "customerId" :none])
       [:br]
       [:form
        [:label {:for "carStatus"} "Car Status"]
@@ -189,11 +208,11 @@
           [:label {:for "make"} "Make"]
           [:select {:name "make" :id "make"}
            (map make-vehicle-type-option vehicleTypes)]
-          [text-input "License Plate State" "plate-state"]
-          [text-input "License Plate Number" "plate-number"]
-          [text-input "Color" "color"]
-          [text-input "Odometer" "odometer"]]]
-        [text-input "Car ID" "carId"])
+          [text-input "License Plate State" "plate-state" :none]
+          [text-input "License Plate Number" "plate-number" :none]
+          [text-input "Color" "color" :none]
+          [text-input "Odometer" "odometer" :none]]]
+        [text-input "Car ID" "carId" :none])
       [:br]
       ;; All Cases: selects package
       [:form

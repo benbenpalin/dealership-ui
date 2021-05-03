@@ -17,6 +17,8 @@
   :initialize-db
   (fn [_ _]
     db/default-db))
+
+
 (reg-event-db
   :update-packages
   (fn [db [_ packages]]
@@ -65,6 +67,8 @@
                   :on-success      [:update-vehicle-types]
                   :on-failure      [:failed-report]}}))
 
+;; Nav
+
 (reg-event-db
   :common/navigate
   (fn [db [_ match]]
@@ -84,6 +88,11 @@
     {:common/navigate-fx! [url-key params query]}))
 
 ;; Car Sale
+(reg-event-db
+  :change-number-of-customers
+  (fn [db [_ number]]
+    (assoc-in db [:sale :number-of-customers] number)))
+
 (reg-event-db
   :change-sale-customer-status
   (fn [db [_ status]]
@@ -106,8 +115,55 @@
     {:db (assoc-in db [:book :package] packageId)
      :dispatch [:get-package-tasks packageId]}))
 
+(reg-event-db
+  :update-sale-customer-1-value
+  (fn [db [_ k v]]
+    (assoc-in db [:sale :customer :newCustomer1 k] v)))
+
+(reg-event-db
+  :update-sale-customer-2-value
+  (fn [db [_ k v]]
+    (assoc-in db [:sale :customer :newCustomer2 k] v)))
+
+(reg-event-db
+  :update-sale-customer-val
+  (fn [db [_ k v]]
+    (assoc-in db [:sale :customer k] v)))
+
+(reg-event-db
+  :update-sale-val
+  (fn [db [_ k v]]
+    (assoc-in db [:sale k] v)))
+
+(reg-event-db
+  :update-sale-bill
+  (fn [db [_ bill]]
+    (assoc-in db [:sale :bill] bill)))
 
 
+(reg-event-fx
+  :submit-purchase
+  (fn
+    [{:keys [db]} _]
+    (let [sale  (:sale db)
+          customer (:customer sale)
+          isNew  (= (:customer-status customer) "new")]
+      {:http-xhrio {:method          :post
+                    :uri             (url "/api/purchase")
+                    :params          {:customer {:isNew  isNew
+                                                 :customerIds (if isNew
+                                                                []
+                                                                [(:customerId1 customer) (:customerId2 customer)])
+                                                 :newCustomers (if isNew
+                                                                 [(:newCustomer1 customer) (:newCustomer2 customer)])}
+                                      :carId (:carId sale)
+                                      :salePrice (:salePrice sale)}
+                    :format          (ajax/json-request-format)
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:update-sale-bill]
+                    :on-failure      [:failed-report]}})))
+
+;;;
 
 (reg-event-fx
   :get-package-tasks
@@ -211,6 +267,11 @@
   :common/route
   (fn [db _]
     (-> db :common/route)))
+
+(reg-sub
+  :sale/number-of-customers
+  (fn [db _]
+    (-> db :sale :number-of-customers)))
 
 (reg-sub
   :packageTasks

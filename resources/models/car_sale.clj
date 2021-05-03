@@ -6,7 +6,7 @@
 ; update: marks car as not in inventory
 ; returns bill info (not currently in store)
 (def complete-purchase-request
-  {:customer {:new true
+  {:customer {:isNew true
               :customerIds [""];;optional, only if false
               :newCustomers [{:firstName "";;optional, only if true
                               :middleInitial ""
@@ -95,9 +95,9 @@
    :date ""})
 
 (def get-timeslot-response
-  [{:timeslotId ""
-    :startTime ""
-    :endTime ""}])
+  {:timeslots [{:timeslotId ""
+                :startTime ""
+                :endTime ""}]})
 
 ;;; Submit appointment - POST
 ;; adds new customer(s) (if applicable)
@@ -106,7 +106,7 @@
 ;; Create appointment in Appointment table,
 ;; add all tasks to Additionally scheduled.
 (def submit-appointment-request
-  {:customer {:new true
+  {:customer {:isNew true
               :customerIds [""];;optional, only if false
               :newCustomers [{:firstName "";;optional, only if true
                               :middleInitial ""
@@ -116,7 +116,7 @@
                               :city ""
                               :state ""
                               :zipcode ""}]}
-   :car {:new true
+   :car {:isNew true
          :carId "" ;;optional, only if false
          :vehicleId" ";;optional, only if true
          :licensePlateNumber "";;optional, only if true
