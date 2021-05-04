@@ -178,6 +178,36 @@
   (fn [db [_  timeslotId]]
     (assoc-in db [:book :timeslotId] timeslotId)))
 
+(reg-event-db
+  :update-appointment-id
+  (fn [db [_  appointmentId]]
+    (assoc-in db [:book :appointmentId] (:appointmentId appointmentId))))
+
+(reg-event-fx
+  :book-appointment
+  (fn
+    [{:keys [db]} _]
+    (let [{:keys [customer car package timeslotId] :as book} (:book db)
+          customerIsNew (= (:customer-status book) "new")
+          carIsNew (= (:customer-status car) "new")
+          {:keys [inPackage notInPackage]} (:packageTasks db)
+          ;; TODO why isn't this working
+          checked-tasks (map :taskId (filter :checked (concat inPackage notInPackage)))]
+      {:http-xhrio {:method          :post
+                    :uri             (url "/api/bookappointment")
+                    :params          {:customer {:isNew        customerIsNew
+                                                 :newCustomers (if customerIsNew
+                                                                 [(:newCustomer1 customer) (:newCustomer2 customer)]
+                                                                 [])}
+                                      :car (assoc car :isNew carIsNew)
+                                      :packageId package
+                                      :tasks checked-tasks
+                                      :timeslotId timeslotId}
+                    :format          (ajax/json-request-format)
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:update-appointment-id]
+                    :on-failure      [:failed-report]}})))
+
 ;;;
 
 (reg-event-db
@@ -212,7 +242,7 @@
     [{:keys [db]} _]
     (let [sale  (:sale db)
           customer (:customer sale)
-          isNew  (= (:customer-status customer) "new")]
+          isNew  (= (:customer-status sale) "new")]
       {:http-xhrio {:method          :post
                     :uri             (url "/api/purchase")
                     :params          {:customer {:isNew  isNew
@@ -400,6 +430,11 @@
   :book/package
   (fn [db _]
     (-> db :book :package)))
+
+(reg-sub
+  :book/appointmentId
+  (fn [db _]
+    (-> db :book :appointmentId)))
 
 (reg-sub
   :sales-report/report

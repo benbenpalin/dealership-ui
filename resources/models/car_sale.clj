@@ -107,7 +107,6 @@
 ;; add all tasks to Additionally scheduled.
 (def submit-appointment-request
   {:customer {:isNew true
-              :customerIds [""];;optional, only if false
               :newCustomers [{:firstName "";;optional, only if true
                               :middleInitial ""
                               :lastName ""

@@ -181,7 +181,8 @@
         packages @(rf/subscribe [:packages])
         vehicleTypes @(rf/subscribe [:vehicleTypes])
         package-tasks @(rf/subscribe [:packageTasks])
-        timeslots @(rf/subscribe [:book/timeslots])]
+        timeslots @(rf/subscribe [:book/timeslots])
+        appointmentId @(rf/subscribe [:book/appointmentId])]
     [:section.section>div.container>div.content
      [:h1 "Book Service Appointment"]
      [:div
@@ -267,7 +268,11 @@
           [:select {:name "timeslot" :id "timeslot"
                     :on-change #(rf/dispatch [:change-selected-timeslot (-> % .-target .-value)])}
            [:option {:value "no-timeslot"}]
-           (map make-timeslot-option timeslots)]]])]]))
+           (map make-timeslot-option timeslots)]]
+         [:br]
+         [:div {:style (:button styles) :on-click #(rf/dispatch [:book-appointment])} "Book Appointment"]
+         (if appointmentId
+           [:div (str "AppointmentId: " appointmentId)])])]]))
 
 (def part "Spark Plug")
 
