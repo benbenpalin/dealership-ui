@@ -172,6 +172,12 @@
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:update-timeslots]
                     :on-failure      [:failed-report]}})))
+
+(reg-event-db
+  :change-selected-timeslot
+  (fn [db [_  timeslotId]]
+    (assoc-in db [:book :timeslotId] timeslotId)))
+
 ;;;
 
 (reg-event-db
@@ -374,6 +380,11 @@
   :book/customer-status
   (fn [db _]
     (-> db :book :customer-status)))
+
+(reg-sub
+  :book/timeslots
+  (fn [db _]
+    (-> db :book :timeslots)))
 
 (reg-sub
   :book/car-status

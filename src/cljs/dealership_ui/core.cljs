@@ -156,22 +156,13 @@
        [:tbody
         (map sales-row report)]]]]))
 
-(def make-list ["Subaru" "BMX" "VW"])
-
-(def model-list ["Forester" "X3" "Van"])
-
-(def year-list [2015 2016 2017])
-
-(def package-tasks ["brake test" "fluid test" "brake replacement" "spark plug replacement" "oil change"])
-
-(def all-tasks ["brake test" "fluid test" "brake replacement" "spark plug replacement" "oil change" "smoke test" "tire test" "tire replacement" "engine replacement" "wiper change"])
 
 (def time-slots ["1 to 3" "3 to 5" "7 to 10"])
 
-(defn make-option [option]
-  [:option {:value option} option])
+(defn make-timeslot-option [{:keys [timeslotId startTime endTime]}]
+  [:option {:value timeslotId} (str startTime " to " endTime)])
 
-(defn make-package-option [{:keys [packageId name]} packages]
+(defn make-package-option [{:keys [packageId name]}]
   [:option {:value packageId} name])
 
 (defn make-checkbox [{:keys [taskName taskId checked]} taskPackageRelation]
@@ -187,10 +178,10 @@
   (let [customer-status @(rf/subscribe [:book/customer-status])
         car-status @(rf/subscribe [:book/car-status])
         numCust @(rf/subscribe [:book/:number-of-customers])
-        package @(rf/subscribe [:book/package])
         packages @(rf/subscribe [:packages])
         vehicleTypes @(rf/subscribe [:vehicleTypes])
-        package-tasks @(rf/subscribe [:packageTasks])]
+        package-tasks @(rf/subscribe [:packageTasks])
+        timeslots @(rf/subscribe [:book/timeslots])]
     [:section.section>div.container>div.content
      [:h1 "Book Service Appointment"]
      [:div
@@ -273,9 +264,10 @@
          ;; only show timeslots on the date selected of the estimated length
          [:form
           [:label {:for "timeslot"} "Time Slot"]
-          [:select {:name "timeslot" :id "timeslot"}
-                    ;:on-change #()}
-           (map make-option time-slots)]]])]]))
+          [:select {:name "timeslot" :id "timeslot"
+                    :on-change #(rf/dispatch [:change-selected-timeslot (-> % .-target .-value)])}
+           [:option {:value "no-timeslot"}]
+           (map make-timeslot-option timeslots)]]])]]))
 
 (def part "Spark Plug")
 

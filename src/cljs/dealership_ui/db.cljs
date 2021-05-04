@@ -34,7 +34,8 @@
                   :color ""
                   :odometer ""}
             :packageId 0
-            :tasks []}
+            :tasks []
+            :timeslotId 0}
 
      :sales-report {}
      :dropOff {:appointmentId "23456"
