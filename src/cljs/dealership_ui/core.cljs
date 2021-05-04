@@ -210,7 +210,7 @@
            [:div
             [:br]
             [:div "Second Customer Information"]
-            [new-customer-inputs :update-sale-customer-2-value]])])
+            [new-customer-inputs :update-book-customer-2-value]])])
       [:br]
       [:form
        [:label {:for "carStatus"} "Car Status"]
