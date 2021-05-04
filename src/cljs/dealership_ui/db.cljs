@@ -1,21 +1,5 @@
 (ns dealership-ui.db)
 
-(def tester
-  {:inPackage    [{:taskId 1
-                   :taskName "Brake Test"
-                   :estdTime 1
-                   :checked true}
-                  {:taskId 2
-                   :taskName "Alternator Test"
-                   :estdTime 2
-                   :checked false}]
-   :notInPackage [{:taskId 1
-                   :taskName "Brake Test"
-                   :estdTime 1}
-                  {:taskId 2
-                   :taskName "Alternator Test"
-                   :estdTime 2}]})
-
 
 (def default-db
   (def default-db
@@ -50,8 +34,7 @@
                   :color ""
                   :odometer ""}
             :packageId 0
-            :tasks []
-            :timeslotId 0}
+            :tasks []}
 
      :sales-report {}
      :dropOff {:appointmentId "23456"

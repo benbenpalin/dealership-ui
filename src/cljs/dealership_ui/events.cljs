@@ -147,6 +147,31 @@
                (fn [v]
                  (map #(if (= (:taskId %) taskId) (assoc % :checked (not prev-checked)) %) v)))))
 
+(reg-event-db
+  :update-date-of-service
+  (fn [db [_ date]]
+    (assoc-in db [:book :date-of-service] date)))
+
+(reg-event-db
+  :update-timeslots
+  (fn [db [_  timeslots]]
+    (assoc-in db [:book :timeslots] (:timeslots timeslots))))
+
+(reg-event-fx
+  :get-timeslots
+  (fn
+    [{:keys [db]} _]
+    (let [{:keys [inPackage notInPackage]} (:packageTasks db)
+          all-tasks (concat inPackage notInPackage)
+          totalTime (reduce #(+ (:estdTime %2) %1) 0 all-tasks)]
+      {:http-xhrio {:method          :get
+                    :uri             (url "/api/timeslots")
+                    :params {:date (-> db :book :date-of-service)
+                             :totalTime totalTime}
+                    :format          (ajax/json-request-format)
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:update-timeslots]
+                    :on-failure      [:failed-report]}})))
 ;;;
 
 (reg-event-db
@@ -217,7 +242,7 @@
   (fn [db [_ result]]
      (let [new-result (update result :inPackage (fn [m] (map #(assoc % :checked true) m)))
            final-result (update new-result :notInPackage (fn [m] (map #(assoc % :checked false) m)))]
-      (assoc db :packageTasks final-result))))
+      (assoc db :packageTasks (assoc final-result :loaded true)))))
 
 ;; Report
 (reg-event-db

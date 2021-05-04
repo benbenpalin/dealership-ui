@@ -252,7 +252,7 @@
         [:option {:value "no package"}]
         (map make-package-option packages)]]
       ;; Once a package is selected, user will see services included in that package and can choose to uncheck them
-      (if (not= package 0)
+      (if (:loaded package-tasks)
         [:div
          [:div "Remove any undesired tasks"]
          [:form
@@ -265,14 +265,16 @@
          ;; calculate total time for appointment
          [:br]
          ;; only show dates with available timeslots of that length (rounded up)
-         [:div "Choose a time slot"]
          [:form
-          [:label {:for "appt-date"} "Appointment Date"]
-          [:input {:type "date" :id "appt-date" :name "appt-date"}]]
+          [:label {:for "appt-date"} "Enter A Date Date"]
+          [:input {:type "date" :id "appt-date" :name "appt-date"
+                   :on-change #(rf/dispatch [:update-date-of-service (-> % .-target .-value)])}]
+          [:div {:style (:button styles) :on-click #(rf/dispatch [:get-timeslots])} "Get Time Slots"]]
          ;; only show timeslots on the date selected of the estimated length
          [:form
           [:label {:for "timeslot"} "Time Slot"]
           [:select {:name "timeslot" :id "timeslot"}
+                    ;:on-change #()}
            (map make-option time-slots)]]])]]))
 
 (def part "Spark Plug")
