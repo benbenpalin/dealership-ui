@@ -289,7 +289,8 @@
         replacement-tasks (:partReplacements update-tasks)
         task-success @(rf/subscribe [:update/task-success])
         selected-task @(rf/subscribe [:update/selected-task])
-        successful @(rf/subscribe [:update/update-successful])]
+        successful @(rf/subscribe [:update/update-successful])
+        testStatus @(rf/subscribe [:update/test-status])]
     [:section.section>div.container>div.content
      [:h1 "Update Service Record"]
      [:div
@@ -309,7 +310,7 @@
                        {:on-click #(rf/dispatch [:add-part-to-bill partId taskId])}
                        (str  "Add " partName " - $" costOfPart " -" " to Bill, and Mark Replacement Complete?")]
                       (when successful
-                        [:div (str partName " has been added to the bill")])
+                        [:div (str partName " has been added to the bill and " taskName " has been marked as complete")])
                       [:br]])])]]
          [:br]
          [:div
@@ -320,11 +321,19 @@
                    (when (= taskId selected-task)
                      [:div
                       [:div "Did the test Pass?"
-                       [:span {:on-click #(rf/dispatch [:complete-task taskId true "Passed"])} "Yes"]
-                       [:span {:on-click #(rf/dispatch [:add-task-for-test-failure testFailureTaskId])} "No"]]
-                      (when successful
-                        [:div (str taskName " has been marked as complete")])])
-                   [:br]])]]])]]))
+                       [:div
+                        [:div {:on-click #(rf/dispatch [:update-test-status "Passed" taskId])} "Yes"]
+                        (when (and successful (= testStatus "Passed"))
+                          [:div
+                           [:div (str taskName " has been marked as complete")]
+                           [:br]])]
+                       [:div
+                        [:div {:on-click #(rf/dispatch [:update-test-status "Failed" testFailureTaskId])} "No"]
+                        (when (and successful (= testStatus "Failed"))
+                          [:div
+                           [:div (str testFailureTaskName " has been added to the list of tasks to do and " taskName " has been marked as complete")]
+                           [:br]])]]
+                      [:br]])])]]])]]))
 
 (defn bill-page []
   [:section.section>div.container>div.content

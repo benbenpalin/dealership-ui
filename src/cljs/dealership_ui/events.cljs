@@ -393,6 +393,15 @@
                   :on-success      [:complete-task taskId true "Failed"]
                   :on-failure      [:failed-report]}}))
 
+(reg-event-fx
+  :update-test-status
+  (fn
+    [{:keys [db]} [_ testStatus taskId]]
+    {:db (assoc-in db [:update :test-status] testStatus)
+     :dispatch (if (= testStatus "Passed")
+                 [:complete-task taskId true "Passed"]
+                 [:add-task-for-test-failure taskId])}))
+
 ;;; dropoff
 (reg-event-db
   :dropoff-success
@@ -514,6 +523,11 @@
   :update/task-success
   (fn [db _]
     (-> db :update :task-success)))
+
+(reg-sub
+  :update/test-status
+  (fn [db _]
+    (-> db :update :test-status)))
 
 (reg-sub
   :update/selected-task
