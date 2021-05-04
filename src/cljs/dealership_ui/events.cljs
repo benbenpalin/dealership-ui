@@ -350,20 +350,48 @@
 (reg-event-fx
   :add-part-to-bill
   (fn
-    [{:keys [db]} [_ partId]]
+    [{:keys [db]} [_ partId taskId]]
     {:http-xhrio {:method          :post
                   :uri             (url "/api/addpart")
                   :params {:partId partId
                            :appointmentId (-> db :update :selected-appointment)}
                   :format          (ajax/json-request-format)
                   :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success      [:add-part-to-bill-success]
+                  :on-success      [:complete-task taskId false nil]
                   :on-failure      [:failed-report]}}))
 
 (reg-event-db
-  :add-part-to-bill-success
+  :update-update-successful
   (fn [db _]
     (assoc-in db [:update  :update-successful] true)))
+
+(reg-event-fx
+  :complete-task
+  (fn
+    [{:keys [db]} [_ taskId isTest testStatus]]
+    {:http-xhrio {:method          :post
+                  :uri             (url "/api/completetask")
+                  :params {:taskId taskId
+                           :appointmentId (-> db :update :selected-appointment)
+                           :isTest isTest
+                           :testStatus testStatus}
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:update-update-successful]
+                  :on-failure      [:failed-report]}}))
+
+(reg-event-fx
+  :add-task-for-test-failure
+  (fn
+    [{:keys [db]} [_ taskId]]
+    {:http-xhrio {:method          :post
+                  :uri             (url "/api/addtask")
+                  :params {:taskId taskId
+                           :appointmentId (-> db :update :selected-appointment)}
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:complete-task taskId true "Failed"]
+                  :on-failure      [:failed-report]}}))
 
 ;;; dropoff
 (reg-event-db

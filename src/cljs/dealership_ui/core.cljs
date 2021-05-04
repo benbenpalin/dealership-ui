@@ -305,21 +305,26 @@
                    [:div {:on-click #(rf/dispatch [:update-update-selected-task taskId])} taskName]
                    (when (= taskId selected-task)
                      [:div
-                      {:on-click #(rf/dispatch [:add-part-to-bill partId])}
-                      (str  "Add " partName " - $" costOfPart " -" " to Bill, and Mark Replacement Complete?")])
-                   (when successful
-                     [:div (str partName " has been added to the bill")])])]]
+                      [:div
+                       {:on-click #(rf/dispatch [:add-part-to-bill partId taskId])}
+                       (str  "Add " partName " - $" costOfPart " -" " to Bill, and Mark Replacement Complete?")]
+                      (when successful
+                        [:div (str partName " has been added to the bill")])
+                      [:br]])])]]
          [:br]
          [:div
           [:h3 "Tests"]
-          [:div (for [t test-tasks]
-                  [:div {:on-click #(%)} (:taskName t)])]
-          [:div "(once test is clicked)"]
-          [:div "Did the test pass?"]
-          [:a {:href "https://www.google.com"} "Yes"]
-          [:a {:href "https://www.google.com"} "No"]
-          [:div (str "Part to replace, due to failure: " part)]
-          [:a {:href "https://www.google.com"} (str "Add " "Spark Plug Replacement " "to tasks?")]]])]]))
+          [:div (for [{:keys [taskId taskName testFailureTaskId testFailureTaskName]} test-tasks]
+                  [:div
+                   [:div {:on-click #(rf/dispatch [:update-update-selected-task taskId])} taskName]
+                   (when (= taskId selected-task)
+                     [:div
+                      [:div "Did the test Pass?"
+                       [:span {:on-click #(rf/dispatch [:complete-task taskId true "Passed"])} "Yes"]
+                       [:span {:on-click #(rf/dispatch [:add-task-for-test-failure testFailureTaskId])} "No"]]
+                      (when successful
+                        [:div (str taskName " has been marked as complete")])])
+                   [:br]])]]])]]))
 
 (defn bill-page []
   [:section.section>div.container>div.content
