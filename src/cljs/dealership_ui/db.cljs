@@ -38,10 +38,8 @@
             :timeslotId 0}
 
      :sales-report {}
-     :dropOff {:appointmentId "23456"
+     :dropoff {:appointmentId 0
                :success false}
-     :updateTasks {:appointmentId ""}
-
 
      :packages [{}]
      :appointments [{}]

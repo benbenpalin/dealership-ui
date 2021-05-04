@@ -156,9 +156,6 @@
        [:tbody
         (map sales-row report)]]]]))
 
-
-(def time-slots ["1 to 3" "3 to 5" "7 to 10"])
-
 (defn make-timeslot-option [{:keys [timeslotId startTime endTime]}]
   [:option {:value timeslotId} (str startTime " to " endTime)])
 
@@ -287,32 +284,42 @@
           [:span (str " " color " " year " " make " " model " ")]]))]))
 
 (defn update-page []
-  (let [update-tasks @(rf/subscribe [:updateTasks])
+  (let [update-tasks @(rf/subscribe [:update/updateTasks])
         test-tasks (:tests update-tasks)
-        replacement-tasks (:partReplacements update-tasks)]
+        replacement-tasks (:partReplacements update-tasks)
+        task-success @(rf/subscribe [:update/task-success])
+        selected-task @(rf/subscribe [:update/selected-task])
+        successful @(rf/subscribe [:update/update-successful])]
     [:section.section>div.container>div.content
      [:h1 "Update Service Record"]
      [:div
       [select-appointment :get-appointment-tasks]
-      [:div
-       [:div "Select a Task to Update"]
-       [:div
-        [:h3 "Part Replacements"]
-        [:div (for [t replacement-tasks]
-                [:div {:on-click #(%)} (:taskName t)])]
-        [:div "(once one is clicked)"]
-        [:a {:href "https://www.google.com"} "Add " part " $20.00" " to Bill and Mark Replacement Complete?"]]]
       [:br]
-      [:div
-       [:h3 "Tests"]
-       [:div (for [t test-tasks]
-               [:div {:on-click #(%)} (:taskName t)])]
-       [:div "(once test is clicked)"]
-       [:div "Did the test pass?"]
-       [:a {:href "https://www.google.com"} "Yes"]
-       [:a {:href "https://www.google.com"} "No"]
-       [:div (str "Part to replace, due to failure: " part)]
-       [:a {:href "https://www.google.com"} (str "Add " "Spark Plug Replacement " "to tasks?")]]]]))
+      (when task-success
+        [:div
+         [:div "Select a Task to Update"]
+         [:div
+          [:h3 "Part Replacements"]
+          [:div (for [{:keys [taskId taskName partId partName costOfPart ]} replacement-tasks]
+                  [:div
+                   [:div {:on-click #(rf/dispatch [:update-update-selected-task taskId])} taskName]
+                   (when (= taskId selected-task)
+                     [:div
+                      {:on-click #(rf/dispatch [:add-part-to-bill partId])}
+                      (str  "Add " partName " - $" costOfPart " -" " to Bill, and Mark Replacement Complete?")])
+                   (when successful
+                     [:div (str partName " has been added to the bill")])])]]
+         [:br]
+         [:div
+          [:h3 "Tests"]
+          [:div (for [t test-tasks]
+                  [:div {:on-click #(%)} (:taskName t)])]
+          [:div "(once test is clicked)"]
+          [:div "Did the test pass?"]
+          [:a {:href "https://www.google.com"} "Yes"]
+          [:a {:href "https://www.google.com"} "No"]
+          [:div (str "Part to replace, due to failure: " part)]
+          [:a {:href "https://www.google.com"} (str "Add " "Spark Plug Replacement " "to tasks?")]]])]]))
 
 (defn bill-page []
   [:section.section>div.container>div.content
@@ -321,22 +328,17 @@
     [select-appointment :tbd]
     [:a "End Appointment and Create Bill"]
     [:div "BILL"]]])
-    ;In bill
-    ; Customer
-    ; Date
-    ; Car
-    ; tests and test status, plus labor cost
-    ; Part replacement, labor cost, part name, part cost
-    ; Time in
-    ; Time out
 
 ;;Not sure exactly how to handle arrival, not sure what is expected
 (defn arrival-page []
-  [:section.section>div.container>div.content
-   [:h1 "Arrival"]
-   [:div
-    [:div "Which appointment has arrived?"]
-    [select-appointment :dropoff-car]]])
+  (let [{:keys [appointmentId success]} @(rf/subscribe [:dropoff])]
+    [:section.section>div.container>div.content
+     [:h1 "Arrival"]
+     [:div
+      [:div "Which appointment has arrived?"]
+      [select-appointment :dropoff-car]
+      (when success
+        [:div (str "Appointment " appointmentId " has been marked as \"Dropped Off\"")])]]))
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]

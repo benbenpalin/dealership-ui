@@ -325,19 +325,45 @@
 (reg-event-fx
   :get-appointment-tasks
   (fn
-    [{:keys [db]} [appointmentId _]]
+    [{:keys [db]} [_ appointmentId]]
     {:http-xhrio {:method          :get
                   :uri             (url "/api/appointmenttasks")
                   :params {:appointmentId appointmentId}
                   :format          (ajax/json-request-format)
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success      [:update-update-tasks]
-                  :on-failure      [:failed-report]}}))
+                  :on-failure      [:failed-report]}
+     :db (assoc-in db [:update :selected-appointment] appointmentId)}))
 
 (reg-event-db
   :update-update-tasks
   (fn [db [_ result]]
-    (assoc db :updateTasks result)))
+    (-> db
+      (assoc-in [:update  :updateTasks] result)
+      (assoc-in [:update  :task-success] true))))
+
+(reg-event-db
+  :update-update-selected-task
+  (fn [db [_ taskId]]
+    (assoc-in db [:update  :selected-task] taskId)))
+
+(reg-event-fx
+  :add-part-to-bill
+  (fn
+    [{:keys [db]} [_ partId]]
+    {:http-xhrio {:method          :post
+                  :uri             (url "/api/addpart")
+                  :params {:partId partId
+                           :appointmentId (-> db :update :selected-appointment)}
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:add-part-to-bill-success]
+                  :on-failure      [:failed-report]}}))
+
+(reg-event-db
+  :add-part-to-bill-success
+  (fn [db _]
+    (assoc-in db [:update  :update-successful] true)))
 
 ;;; dropoff
 (reg-event-db
@@ -349,14 +375,14 @@
   :dropoff-car
   (fn
     [{:keys [db]} [_ appointmentId]]
-    {:db (assoc db :dopoph appointmentId)
-     :http-xhrio {:method          :post
+    {:http-xhrio {:method          :post
                   :uri             (url "/api/dropoff")
                   :params {:appointmentId appointmentId}
                   :format          (ajax/json-request-format)
                   :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success      [:update-report]
-                  :on-failure      [:failed-report]}}))
+                  :on-success      [:dropoff-success]
+                  :on-failure      [:failed-report]}
+     :db (assoc db :dropoff {:appointmentId appointmentId})}))
 
 
 ;;subscriptions
@@ -452,9 +478,32 @@
     (-> db :sales-report :end-date)))
 
 (reg-sub
-  :updateTasks
+  :update/updateTasks
   (fn [db _]
-    (-> db :updateTasks)))
+    (-> db :update :updateTasks)))
+
+(reg-sub
+  :update/task-success
+  (fn [db _]
+    (-> db :update :task-success)))
+
+(reg-sub
+  :update/selected-task
+  (fn [db _]
+    (-> db :update :selected-task)))
+
+(reg-sub
+  :update/update-successful
+  (fn [db _]
+    (-> db :update :update-successful)))
+
+
+(reg-sub
+  :dropoff
+  (fn [db _]
+    (-> db :dropoff)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;
 
 (reg-sub
