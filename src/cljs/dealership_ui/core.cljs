@@ -77,7 +77,8 @@
 
 (defn home-page []
   (let [customer-status @(rf/subscribe [:sale/customer-status])
-        num-cust @(rf/subscribe [:sale/number-of-customers])]
+        num-cust @(rf/subscribe [:sale/number-of-customers])
+        success @(rf/subscribe [:sale/purchase-success])]
    [:section.section>div.container>div.content
     [:h1 "Car Sale"]
     [:div
@@ -114,7 +115,8 @@
      [text-input "Sale Price" :salePrice :update-sale-val]
      [:br]
      [:div {:style (:button styles) :on-click #(rf/dispatch [:submit-purchase])} "Complete Purchase"]]
-    [sale-bill]]))
+    (when success
+      [sale-bill])]))
 
 (defn sales-row [{:keys [vehicleId make model year totalSold profit]}]
   [:tr

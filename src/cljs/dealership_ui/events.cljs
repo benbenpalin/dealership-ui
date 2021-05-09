@@ -232,7 +232,9 @@
 (reg-event-db
   :update-sale-bill
   (fn [db [_ bill]]
-    (assoc-in db [:sale :bill] bill)))
+    (-> db
+      (assoc-in [:sale :bill] bill)
+      (assoc-in [:sale :purchase-success] true))))
 
 
 (reg-event-fx
@@ -437,6 +439,11 @@
   :sale/bill
   (fn [db _]
     (-> db :sale :bill)))
+
+(reg-sub
+  :sale/purchase-success
+  (fn [db _]
+    (-> db :sale :purchase-success)))
 
 (reg-sub
   :sale/salePrice

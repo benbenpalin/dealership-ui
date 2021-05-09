@@ -3,7 +3,8 @@
 
 (def default-db
   (def default-db
-    {:sale {:customer-status "existing"
+    {:sale {:purchase-success nil
+            :customer-status "existing"
             :number-of-customers "one"
             :customer {:customerId1 nil
                        :customerId2 nil
