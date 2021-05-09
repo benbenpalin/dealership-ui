@@ -34,7 +34,7 @@
                [:div#nav-menu.navbar-menu
                 {:class (when @expanded? :is-active)}
                 [:div.navbar-start
-                 [nav-link "#/" "Home" :home]
+                 [nav-link "#/" "Sale" :home]
                  [nav-link "#/report" "Report" :report]
                  [nav-link "#/book" "Book" :book]
                  [nav-link "#/update" "Update" :update]
@@ -294,53 +294,56 @@
     [:section.section>div.container>div.content
      [:h1 "Update Service Record"]
      [:div
+      [:h5 "Which Appointment Should Be Updated?"]
       [select-appointment :get-appointment-tasks]
       [:br]
       (when task-success
         [:div
-         [:div "Select a Task to Update"]
+         [:h5 "Select a Task to Update"]
          [:div
-          [:h3 "Part Replacements"]
+          [:h6 "Part Replacements"]
           [:div (for [{:keys [taskId taskName partId partName costOfPart ]} replacement-tasks]
                   [:div
-                   [:div {:on-click #(rf/dispatch [:update-update-selected-task taskId])} taskName]
+                   [:div {:on-click #(rf/dispatch [:update-update-selected-task taskId]) :style {:color "blue" :cursor "pointer"}} taskName]
                    (when (= taskId selected-task)
                      [:div
                       [:div
-                       {:on-click #(rf/dispatch [:add-part-to-bill partId taskId])}
+                       {:on-click #(rf/dispatch [:add-part-to-bill partId taskId]) :style {:color "blue" :cursor "pointer"}}
                        (str  "Add " partName " - $" costOfPart " -" " to Bill, and Mark Replacement Complete?")]
                       (when successful
-                        [:div (str partName " has been added to the bill and " taskName " has been marked as complete")])
+                        [:h6 (str partName " has been added to the bill and " taskName " has been marked as complete")])
                       [:br]])])]]
          [:br]
          [:div
-          [:h3 "Tests"]
+          [:h6 "Tests"]
           [:div (for [{:keys [taskId taskName testFailureTaskId testFailureTaskName]} test-tasks]
                   [:div
-                   [:div {:on-click #(rf/dispatch [:update-update-selected-task taskId])} taskName]
+                   [:div {:on-click #(rf/dispatch [:update-update-selected-task taskId]) :style {:color "blue" :cursor "pointer"}} taskName]
                    (when (= taskId selected-task)
                      [:div
-                      [:div "Did the test Pass?"
-                       [:div
-                        [:div {:on-click #(rf/dispatch [:update-test-status "Passed" taskId])} "Yes"]
-                        (when (and successful (= testStatus "Passed"))
-                          [:div
-                           [:div (str taskName " has been marked as complete")]
-                           [:br]])]
-                       [:div
-                        [:div {:on-click #(rf/dispatch [:update-test-status "Failed" testFailureTaskId])} "No"]
-                        (when (and successful (= testStatus "Failed"))
-                          [:div
-                           [:div (str testFailureTaskName " has been added to the list of tasks to do and " taskName " has been marked as complete")]
-                           [:br]])]]
+                      [:h6 {:style {:margin-top "10px" :margin-bottom "0px"}} "Did the test Pass?"]
+                      [:div
+                       [:div {:on-click #(rf/dispatch [:update-test-status "Passed" taskId]) :style {:color "blue" :cursor "pointer"}} "Yes"]
+                       (when (and successful (= testStatus "Passed"))
+                         [:div
+                          [:h6 (str taskName " has been marked as complete")]
+                          [:br]])]
+                      [:div
+                       [:div {:on-click #(rf/dispatch [:update-test-status "Failed" testFailureTaskId]) :style {:color "blue" :cursor "pointer"}} "No"]
+                       (when (and successful (= testStatus "Failed"))
+                         [:div
+                          [:h6 (str testFailureTaskName " has been added to the list of tasks to do and " taskName " has been marked as complete")]
+                          [:br]])]
                       [:br]])])]]])]]))
 
 (defn bill-page []
   [:section.section>div.container>div.content
    [:h1 "Bill"]
    [:div
+    [:h5 "Which Appointment Has Ended?"]
     [select-appointment :tbd]
-    [:a "End Appointment and Create Bill"]
+    [:div {:style (assoc (:button styles) :margin-top "20px" :margin-bottom "20px")} "End Appointment and Create Bill"]
+    ;; TODO Make fucking bill!!!
     [:div "BILL"]]])
 
 ;;Not sure exactly how to handle arrival, not sure what is expected
@@ -349,10 +352,10 @@
     [:section.section>div.container>div.content
      [:h1 "Arrival"]
      [:div
-      [:div "Which appointment has arrived?"]
+      [:h5 "Which appointment has arrived?"]
       [select-appointment :dropoff-car]
       (when success
-        [:div (str "Appointment " appointmentId " has been marked as \"Dropped Off\"")])]]))
+        [:h5 (str "Appointment #" appointmentId " has been marked as \"Dropped Off\"")])]]))
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
