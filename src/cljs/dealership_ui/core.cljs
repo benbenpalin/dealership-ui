@@ -135,19 +135,18 @@
      [:div
       [:form
        [:div
-        [:label {:for "startDate"} "Start Date"]
+        [:label {:for "startDate" :style (:home-label styles)} "Start Date (mm/dd/yyyy)"]
         [:input {:type "date" :id "startDate" :name "startDate" :value start-date
                  :on-change #(rf/dispatch [:set-start-date (-> % .-target .-value)])}]]
        [:div
-        [:label {:for "endDate"} "End Date"]
+        [:label {:for "endDate" :style (:home-label styles)} "End Date (mm/dd/yyyy)"]
         [:input {:type "date" :id "endDate" :name "endDate" :value end-date
                  :on-change #(rf/dispatch [:set-end-date (-> % .-target .-value)])}]]
        [:div
-        ;;TODO get border working (probably make a class for buttons, since buttons suck)
-        [:div {:style (:button styles) :on-click #(rf/dispatch [:pull-report])} "Pull Report"]]]]
+        [:div {:style (assoc (:button styles) :margin-top "20px" :margin-bottom "20px") :on-click #(rf/dispatch [:pull-report])} "Pull Report"]]]]
      [:div
       [:table
-       [:thead
+       [:thead {:style {:text-align "left"}}
         [:th "Vehicle Id"]
         [:th "Make"]
         [:th "Model"]
