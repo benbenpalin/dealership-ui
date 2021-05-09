@@ -9,10 +9,8 @@
     [dealership-ui.events]
     [reitit.core :as reitit]
     [reitit.frontend.easy :as rfe]
-    [clojure.string :as string]
-    [clojure.set :as cset]
-    [cljs-time.core :as time]
-    [cljs-time.format :as timef])
+    [clojure.string :as string])
+
   (:import goog.History))
 
 (defn nav-link [uri title page]
@@ -272,14 +270,11 @@
          (if appointmentId
            [:h4 (str "Appointment  #" appointmentId " has been booked")])])]]))
 
-(def part "Spark Plug")
-
-
 (defn select-appointment [event]
   (let  [appointments @(rf/subscribe [:appointments])]
     [:div
      (for [a appointments]
-       (let [{appointmentId :appointmentId color :color year :year make :make model :model vehicleId :vehicleId} a]
+       (let [{appointmentId :appointmentId color :color year :year make :make model :model} a]
          [:div {:style {:color "blue" :cursor "pointer"} :on-click  #(rf/dispatch [event appointmentId])}
           [:span {:style {:margin-right "20px"}} (str "#" appointmentId)]
           [:span (str " " color " " year " " make " " model " ")]]))]))
@@ -341,7 +336,7 @@
     [:h5 "Which Appointment Has Ended?"]
     [select-appointment :tbd]
     [:div {:style (assoc (:button styles) :margin-top "20px" :margin-bottom "20px")} "End Appointment and Create Bill"]
-    ;; TODO Make fucking bill!!!
+    ;; TODO Make fucking bill
     [:div "BILL"]]])
 
 ;;Not sure exactly how to handle arrival, not sure what is expected
