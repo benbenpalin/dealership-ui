@@ -68,12 +68,12 @@
     [:div {:style {:margin-top "30px"}}
      [:h5 "Bill"]
      [:div (str dateOfSale)]
-     [:div (str "Customers: " (string/join ", " customerNames))]
-     [:div (str "PurchaseId: " purchaseId)]
-     [:div (str "Car Purchase: " year " " make " " model)]
-     [:div (str "Sale Price: $" sale-price)]
-     [:div (str "Color: " color)]
-     [:div (str "License Plate: " licensePlateState " " licensePlateNumber)]]))
+     [:div [:span {:style {:width "150px" :display "inline-block"}} "Customers:"] [:span  (string/join ", " customerNames)]]
+     [:div [:span {:style {:width "150px" :display "inline-block"}} "PurchaseId:"] [:span   purchaseId]]
+     [:div [:span {:style {:width "150px" :display "inline-block"}} "Car Purchase:"] [:span  (str year " " make " " model)]]
+     [:div [:span {:style {:width "150px" :display "inline-block"}} "Sale Price:"] [:span   (str "$" sale-price)]]
+     [:div [:span {:style {:width "150px" :display "inline-block"}} "Color:"] [:span  color]]
+     [:div [:span {:style {:width "150px" :display "inline-block"}} "License Plate"] [:span  (str licensePlateState " " licensePlateNumber)]]]))
 
 (defn home-page []
   (let [customer-status @(rf/subscribe [:sale/customer-status])
