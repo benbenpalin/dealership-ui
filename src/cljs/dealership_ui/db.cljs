@@ -32,7 +32,7 @@
                   :licensePlateNumber ""
                   :licensePlateState ""
                   :color ""
-                  :odometer ""}
+                  :odometer 0}
             :packageId 0
             :tasks []
             :timeslotId 0}

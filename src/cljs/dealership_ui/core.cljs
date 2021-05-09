@@ -41,9 +41,14 @@
                  [nav-link "#/bill" "Bill" :bill]
                  [nav-link "#/arrival" "Arrival" :arrival]]]]))
 
+(def styles
+  {:button {:border-radius "5px" :max-width "200px" :text-align "center" :cursor "pointer"
+            :background "blue" :color "white"}
+   :home-label {:display "inline-block" :width "200px"}})
+
 (defn text-input [label id event]
   [:div
-   [:label {:for id} label]
+   [:label {:for id :style (:home-label styles)} label]
    [:input {:type "text" :id id :name id :on-change #(rf/dispatch [event id (-> % .-target .-value)])}]])
 
 (defn new-customer-inputs [event]
@@ -57,14 +62,11 @@
    [text-input "State" :state event]
    [text-input "Zip Code" :zipcode event]])
 
-(def styles
-  {:button {:border "2px solid black" :max-width "100px"}})
-
 (defn sale-bill []
   (let [{:keys [customerNames purchaseId dateOfSale make model year color licensePlateNumber licensePlateState]} @(rf/subscribe [:sale/bill])
         sale-price @(rf/subscribe [:sale/salePrice])]
-    [:div
-     [:h4 "Bill"]
+    [:div {:style {:margin-top "30px"}}
+     [:h5 "Bill"]
      [:div (str dateOfSale)]
      [:div (str "Customers: " (string/join ", " customerNames))]
      [:div (str "PurchaseId: " purchaseId)]
@@ -78,23 +80,22 @@
         num-cust @(rf/subscribe [:sale/number-of-customers])]
    [:section.section>div.container>div.content
     [:h1 "Car Sale"]
-    ;; TODO add ability to add another customer
     [:div
-     [:label {:for "numberOfCustomers"} "How Many Purchasers"]
+     [:label {:for "numberOfCustomers" :style (:home-label styles)} "How Many Purchasers"]
      [:select {:name "numberOfCustomers"
                :id "numberOfCustomers"
                :on-change #(rf/dispatch [:change-number-of-customers (-> % .-target .-value)])}
       [:option {:value "one"} "One"]
       [:option {:value "two"} "Two"]]]
     [:dev
-     [:label {:for "customerStatus"} "Status of Customer(s)"]
+     [:label {:for "customerStatus" :style (:home-label styles)} "Status of Customer(s)"]
      [:select {:name "customerStatus"
                :id "customerStatus"
                :on-change #(rf/dispatch [:change-sale-customer-status (-> % .-target .-value)])}
       [:option {:value "existing"} "Existing"]
       [:option {:value "new"} "New"]]
      [:br]]
-    [:div {:style {:margin-top "20px"}} "Input Customer Information"]
+    [:h5 {:style {:margin-top "20px"}} "Enter Customer Information"]
     [:form
      (if (= customer-status "new")
        [:div
@@ -108,7 +109,7 @@
         [text-input "Customer ID" :customerId1 :update-sale-customer-val]
         (when (= num-cust "two")
           [text-input "2nd Customer ID" :customerId2 :update-sale-customer-val])])
-     [:br]
+     [:h5 {:style {:margin-top "20px"}} "Enter Sale Information"]
      [text-input "Car ID" :carId :update-sale-val]
      [text-input "Sale Price" :salePrice :update-sale-val]
      [:br]
@@ -165,6 +166,7 @@
 (defn make-checkbox [{:keys [taskName taskId checked]} taskPackageRelation]
   [:div
    [:input {:type "checkbox" :id taskId :name taskName :value taskId :checked checked
+            :style {:margin-right "20px"}
             :on-change #(rf/dispatch [:update-check taskPackageRelation taskId checked])}]
    [:label {:for taskId} taskName]])
 
@@ -183,7 +185,8 @@
     [:section.section>div.container>div.content
      [:h1 "Book Service Appointment"]
      [:div
-      [:label {:for "customerStatus"} "Customer Status"]
+      [:h5 {:style {:margin-top "20px"}} "Customer Information"]
+      [:label {:for "customerStatus" :style (:home-label styles)} "Customer Status"]
       [:select {:name "customerStatus"
                 :id "customerStatus"
                 :on-change #(rf/dispatch [:change-book-customer-status (-> % .-target .-value)])}
@@ -194,23 +197,22 @@
       (when (= customer-status "new")
         [:div
          [:div
-          [:label {:for "numberOfCustomers"} "How Many New Customers"]
+          [:label {:for "numberOfCustomers" :style (:home-label styles)} "How Many New Customers"]
           [:select {:name "numberOfCustomers"
                     :id "numberOfCustomers"
                     :on-change #(rf/dispatch [:change-book-number-of-customers (-> % .-target .-value)])}
            [:option {:value "one"} "One"]
            [:option {:value "two"} "Two"]]]
-         [:div "Enter new customer data"]
+         [:h5  {:style {:margin-top "20px"}} "Enter New Customer Information"]
          [:form
           [new-customer-inputs :update-book-customer-1-value]]
          (when (= numCust "two")
            [:div
-            [:br]
-            [:div "Second Customer Information"]
+            [:h5  {:style {:margin-top "20px"}} "Enter Second Customer Information"]
             [new-customer-inputs :update-book-customer-2-value]])])
-      [:br]
       [:form
-       [:label {:for "carStatus"} "Car Status"]
+       [:h5  {:style {:margin-top "20px"}} "Enter Car Information"]
+       [:label {:for "carStatus" :style (:home-label styles)} "Car Status"]
        [:select {:name "carStatus"
                  :id "carStatus"
                  :on-change #(rf/dispatch [:change-book-car-status (-> % .-target .-value)])}
@@ -219,10 +221,10 @@
       ;; For new customer or existing customer with new car
       (if (= car-status "new")
         [:div
-         [:div "Enter new car data"]
+         [:h5  {:style {:margin-top "20px"}} "Enter New Car Information"]
          [:form
-          [:label {:for "make"} "Make"]
-          [:select {:name "make" :id "make"
+          [:label {:for "vehicle-type" :style (:home-label styles)} "Vehicle Type"]
+          [:select {:name "vehicle-type" :id "vehicle-type"
                     :on-change #(rf/dispatch [:update-book-vehicle-id (-> % .-target .-value)])}
            [:option {:value "no car"}]
            (map make-vehicle-type-option vehicleTypes)]
@@ -231,10 +233,10 @@
           [text-input "Color" :color :update-book-car-value]
           [text-input "Odometer" :odometer :update-book-car-value]]]
         [text-input "Car ID" :carId :update-book-car-value])
-      [:br]
       ;; All Cases: selects package
       [:form
-       [:label {:for "package"} "Choose A Package"]
+       [:h5  {:style {:margin-top "20px"}} "Select Package Information"]
+       [:label {:for "package" :style (:home-label styles)} "Choose A Package"]
        [:select {:name "package"
                  :id "package"
                  :on-change #(rf/dispatch [:change-package (-> % .-target .-value)])}
@@ -243,33 +245,31 @@
       ;; Once a package is selected, user will see services included in that package and can choose to uncheck them
       (if (:loaded package-tasks)
         [:div
-         [:div "Remove any undesired tasks"]
+         [:h5  {:style {:margin-top "20px"}} "Remove Any Undesired Tasks"]
          [:form
            (map #(make-checkbox  % :inPackage) (:inPackage package-tasks))]
          ;; In all cases, user can add more tasks
-         [:br]
-         [:div "Add any additional services"]
+         [:h5  {:style {:margin-top "20px"}} "Add Any Additional Tasks"]
          [:form
           (map #(make-checkbox % :notInPackage) (:notInPackage package-tasks))]
          ;; calculate total time for appointment
-         [:br]
          ;; only show dates with available timeslots of that length (rounded up)
          [:form
-          [:label {:for "appt-date"} "Enter A Date Date"]
+          [:h5  {:style {:margin-top "20px"}} "Select Time Slot"]
+          [:label {:for "appt-date" :style (:home-label styles)} "Enter A Date Date"]
           [:input {:type "date" :id "appt-date" :name "appt-date"
                    :on-change #(rf/dispatch [:update-date-of-service (-> % .-target .-value)])}]
-          [:div {:style (:button styles) :on-click #(rf/dispatch [:get-timeslots])} "Get Time Slots"]]
+          [:div {:style (merge (:button styles) {:margin-top "20px" :margin-bottom "20px"}) :on-click #(rf/dispatch [:get-timeslots])} "Get Time Slots"]]
          ;; only show timeslots on the date selected of the estimated length
          [:form
-          [:label {:for "timeslot"} "Time Slot"]
+          [:label {:for "timeslot" :style (:home-label styles)} "Time Slot"]
           [:select {:name "timeslot" :id "timeslot"
                     :on-change #(rf/dispatch [:change-selected-timeslot (-> % .-target .-value)])}
            [:option {:value "no-timeslot"}]
            (map make-timeslot-option timeslots)]]
-         [:br]
-         [:div {:style (:button styles) :on-click #(rf/dispatch [:book-appointment])} "Book Appointment"]
+         [:div {:style (merge (:button styles) {:margin-top "20px" :margin-bottom "20px"}) :on-click #(rf/dispatch [:book-appointment])} "Book Appointment"]
          (if appointmentId
-           [:div (str "AppointmentId: " appointmentId)])])]]))
+           [:h4 (str "Appointment  #" appointmentId " has been booked")])])]]))
 
 (def part "Spark Plug")
 

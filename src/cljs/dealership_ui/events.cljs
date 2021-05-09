@@ -191,7 +191,6 @@
           customerIsNew (= (:customer-status book) "new")
           carIsNew (= (:customer-status car) "new")
           {:keys [inPackage notInPackage]} (:packageTasks db)
-          ;; TODO why isn't this working
           checked-tasks (map :taskId (filter :checked (concat inPackage notInPackage)))]
       {:http-xhrio {:method          :post
                     :uri             (url "/api/bookappointment")
@@ -559,4 +558,3 @@
   :<- [:common/route]
   (fn [route _]
     (-> route :data :view)))
-
