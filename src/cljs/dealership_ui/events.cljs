@@ -422,6 +422,41 @@
                   :on-failure      [:failed-report]}
      :db (assoc db :dropoff {:appointmentId appointmentId})}))
 
+;; BILL
+(reg-event-db
+  :bill-select-appointment
+  (fn [db [_ appointment-id]]
+    (assoc-in db [:bill :appointment] appointment-id)))
+
+(defn tests-total [tests]
+  (reduce #(+ %1 (:laborCost %2)) tests))
+
+(defn get-total [{:keys [tests replacements]}]
+  (let [test-total (reduce #(+ %1 (:laborCost %2)) 0 tests)
+        replacement-total (reduce #(+ %1 (:laborCost %2) (:costOfPart %2)) 0 replacements)]
+    (+ test-total replacement-total)))
+
+(reg-event-db
+  :bill-success
+  (fn [db [_ bill]]
+    (-> db
+      (assoc-in [:bill :success] true)
+      (assoc-in [:bill :bill] bill)
+      (assoc-in [:bill :total] (get-total bill)))))
+
+(reg-event-fx
+  :complete-appointment
+  (fn
+    [{:keys [db]} _]
+    {:http-xhrio {:method          :post
+                  :uri             (url "/api/completeappointment")
+                  :params {:appointmentId (-> db :bill :appointment)}
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:bill-success]
+                  :on-failure      [:failed-report]}}))
+
+
 
 ;;subscriptions
 
@@ -429,6 +464,26 @@
   :common/route
   (fn [db _]
     (-> db :common/route)))
+
+(reg-sub
+  :bill/bill
+  (fn [db _]
+    (-> db :bill :bill)))
+
+(reg-sub
+  :bill/total
+  (fn [db _]
+    (-> db :bill :total)))
+
+(reg-sub
+  :bill/success
+  (fn [db _]
+    (-> db :bill :success)))
+
+(reg-sub
+  :bill/appointment
+  (fn [db _]
+    (-> db :bill :appointment)))
 
 (reg-sub
   :sale/number-of-customers

@@ -329,15 +329,57 @@
                           [:h6 (str testFailureTaskName " has been added to the list of tasks to do and " taskName " has been marked as complete")]])]
                       [:br]])])]]])]]))
 
+(defn replacement-bill [{:keys [taskName timeToComplete laborCost partName costOfPart]}]
+  [:div
+   [:div taskName]
+   [:div (str "Time To Complete: " timeToComplete " minutes")]
+   [:div (str "Labor Costs: $" laborCost)]
+   [:div (str partName ": $" costOfPart)]])
+
+(defn test-bill [{:keys [taskName timeToComplete laborCost testStatus]}]
+  [:div
+   [:div taskName]
+   [:div (str "Test Status: " testStatus)]
+   [:div (str "Time To Complete: " timeToComplete " minutes")]
+   [:div (str "Labor Costs: $" laborCost)]])
+
+(defn appointment-bill [appointment-id]
+  (let [{:keys [customerNames tests replacements dropOff pickUp date]} @(rf/subscribe [:bill/bill])
+        bill-success @(rf/subscribe [:bill/success])
+        bill-total @(rf/subscribe [:bill/total])]
+    [:div {:style {:margin-top "30px"}}
+     [:h4 "Bill"]
+     [:div (str date " " dropOff " to " pickUp)]
+     [:div [:span {:style {:width "150px" :display "inline-block"}} "Customers:"] [:span  (string/join ", " customerNames)]]
+     [:div [:span {:style {:width "150px" :display "inline-block"}} "AppointmentId:"] [:span   appointment-id]]
+     [:div
+      [:h6 "Tests"]
+      (for [test tests]
+        [test-bill test])]
+     [:div
+      [:h6 "Part Replacements"]
+      (for [rep replacements]
+        [replacement-bill rep])]
+     [:div "TOTAL: $" bill-total]]))
+   ;  [:div [:span {:style {:width "150px" :display "inline-block"}} "Car Purchase:"] [:span  (str year " " make " " model)]]]))
+     ;[:div [:span {:style {:width "150px" :display "inline-block"}} "Sale Price:"] [:span   (str "$" sale-price)]]
+     ;[:div [:span {:style {:width "150px" :display "inline-block"}} "Color:"] [:span  color]]
+     ;[:div [:span {:style {:width "150px" :display "inline-block"}} "License Plate"] [:span  (str licensePlateState " " licensePlateNumber)]]]))
+
 (defn bill-page []
-  [:section.section>div.container>div.content
-   [:h1 "Bill"]
-   [:div
-    [:h5 "Which Appointment Has Ended?"]
-    [select-appointment :tbd]
-    [:div {:style (assoc (:button styles) :margin-top "20px" :margin-bottom "20px")} "End Appointment and Create Bill"]
-    ;; TODO Make fucking bill
-    [:div "BILL"]]])
+  (let [appointment-selected @(rf/subscribe [:bill/appointment])
+        bill-success @(rf/subscribe [:bill/success])]
+    [:section.section>div.container>div.content
+     [:h1 "Bill"]
+     [:div
+      [:h5 "Which Appointment Has Ended?"]
+      [select-appointment :bill-select-appointment]
+      (when appointment-selected
+        [:div {:style (assoc (:button styles) :margin-top "20px" :margin-bottom "20px")
+               :on-click #(rf/dispatch [:complete-appointment appointment-selected])} "End Appointment and Create Bill"])
+      ;; TODO Make fucking bill
+      (when bill-success
+        [appointment-bill appointment-selected])]]))
 
 ;;Not sure exactly how to handle arrival, not sure what is expected
 (defn arrival-page []
