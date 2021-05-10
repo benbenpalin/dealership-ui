@@ -36,7 +36,7 @@
                  [nav-link "#/report" "Report" :report]
                  [nav-link "#/book" "Book" :book]
                  [nav-link "#/update" "Update" :update]
-                 [nav-link "#/bill" "Bill" :bill]
+                 [nav-link "#/bill" "Complete" :bill]
                  [nav-link "#/arrival" "Arrival" :arrival]]]]))
 
 (def styles
@@ -331,53 +331,63 @@
 
 (defn replacement-bill [{:keys [taskName timeToComplete laborCost partName costOfPart]}]
   [:div
-   [:div taskName]
-   [:div (str "Time To Complete: " timeToComplete " minutes")]
-   [:div (str "Labor Costs: $" laborCost)]
-   [:div (str partName ": $" costOfPart)]])
+   [:div
+    [:span {:style {:display "inline-block" :width "150px" :margin-left "20px"}} taskName]
+    [:span {:style {:display "inline-block" :width "100px"}}]
+    [:span {:style {:display "inline-block" :width "100px"}} (str timeToComplete " minutes")]
+    [:span {:style {:display "inline-block" :width "100px"}} (str "$" laborCost)]]
+   [:div
+    [:span {:style {:display "inline-block" :width "150px" :margin-left "20px" :padding-left "20px"}} (str "Part: " partName)]
+    [:span {:style {:display "inline-block" :width "100px"}}]
+    [:span {:style {:display "inline-block" :width "100px"}}]
+    [:span {:style {:display "inline-block" :width "100px"}} (str "$" costOfPart)]]])
+   ;[:div taskName]
+   ;[:div (str "Time To Complete: " timeToComplete " minutes")]
+   ;[:div (str "Labor Costs: $" laborCost)]
+   ;[:div (str partName ": $" costOfPart)]])
 
 (defn test-bill [{:keys [taskName timeToComplete laborCost testStatus]}]
   [:div
-   [:div taskName]
-   [:div (str "Test Status: " testStatus)]
-   [:div (str "Time To Complete: " timeToComplete " minutes")]
-   [:div (str "Labor Costs: $" laborCost)]])
+   [:span {:style {:display "inline-block" :width "150px" :margin-left "20px"}} taskName]
+   [:span {:style {:display "inline-block" :width "100px"}} testStatus]
+   [:span {:style {:display "inline-block" :width "100px"}} (str timeToComplete " minutes")]
+   [:span {:style {:display "inline-block" :width "100px"}} (str "$" laborCost)]])
 
 (defn appointment-bill [appointment-id]
   (let [{:keys [customerNames tests replacements dropOff pickUp date]} @(rf/subscribe [:bill/bill])
         bill-success @(rf/subscribe [:bill/success])
         bill-total @(rf/subscribe [:bill/total])]
     [:div {:style {:margin-top "30px"}}
-     [:h4 "Bill"]
-     [:div (str date " " dropOff " to " pickUp)]
+     [:h3 "Bill"]
+     [:div [:span {:style {:width "150px" :display "inline-block"}} date] [:span (str dropOff " to " pickUp)]]
      [:div [:span {:style {:width "150px" :display "inline-block"}} "Customers:"] [:span  (string/join ", " customerNames)]]
      [:div [:span {:style {:width "150px" :display "inline-block"}} "AppointmentId:"] [:span   appointment-id]]
+
      [:div
+      [:br]
       [:h6 "Tests"]
       (for [test tests]
         [test-bill test])]
      [:div
+      [:br]
       [:h6 "Part Replacements"]
       (for [rep replacements]
         [replacement-bill rep])]
-     [:div "TOTAL: $" bill-total]]))
-   ;  [:div [:span {:style {:width "150px" :display "inline-block"}} "Car Purchase:"] [:span  (str year " " make " " model)]]]))
-     ;[:div [:span {:style {:width "150px" :display "inline-block"}} "Sale Price:"] [:span   (str "$" sale-price)]]
-     ;[:div [:span {:style {:width "150px" :display "inline-block"}} "Color:"] [:span  color]]
-     ;[:div [:span {:style {:width "150px" :display "inline-block"}} "License Plate"] [:span  (str licensePlateState " " licensePlateNumber)]]]))
+     [:br]
+     [:div [:span {:style {:display "inline-block" :width "370px"}} "TOTAL:"]
+           [:span {:style {:display "inline-block" :width "100px"}} (str "$" bill-total)]]]))
 
 (defn bill-page []
   (let [appointment-selected @(rf/subscribe [:bill/appointment])
         bill-success @(rf/subscribe [:bill/success])]
     [:section.section>div.container>div.content
-     [:h1 "Bill"]
+     [:h1 "Complete"]
      [:div
       [:h5 "Which Appointment Has Ended?"]
       [select-appointment :bill-select-appointment]
       (when appointment-selected
         [:div {:style (assoc (:button styles) :margin-top "20px" :margin-bottom "20px")
                :on-click #(rf/dispatch [:complete-appointment appointment-selected])} "End Appointment and Create Bill"])
-      ;; TODO Make fucking bill
       (when bill-success
         [appointment-bill appointment-selected])]]))
 
