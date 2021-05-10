@@ -13,11 +13,19 @@
 
   (:import goog.History))
 
+(defn refresh []
+  (do
+    (rf/dispatch [:initialize-db])
+    (rf/dispatch [:get-packages-on-load])
+    (rf/dispatch [:get-appointments-on-load])
+    (rf/dispatch [:get-vehicle-types-on-load])))
+
 (defn nav-link [uri title page]
   [:a.navbar-item
    {:href   uri
     :class (when (= page @(rf/subscribe [:common/page-id])) :is-active)}
    title])
+
 
 (defn navbar [] 
   (r/with-let [expanded? (r/atom false)]
@@ -31,7 +39,7 @@
                  [:span][:span][:span]]]
                [:div#nav-menu.navbar-menu
                 {:class (when @expanded? :is-active)}
-                [:div.navbar-start
+                [:div.navbar-start {:on-click refresh}
                  [nav-link "#/" "Sale" :home]
                  [nav-link "#/report" "Report" :report]
                  [nav-link "#/book" "Book" :book]
