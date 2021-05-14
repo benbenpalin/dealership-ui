@@ -162,7 +162,7 @@
   (fn
     [{:keys [db]} _]
     (let [{:keys [inPackage notInPackage]} (:packageTasks db)
-          all-tasks (concat inPackage notInPackage)
+          all-tasks (concat (filter :checked inPackage) (filter :checked notInPackage))
           totalTime (reduce #(+ (:estdTime %2) %1) 0 all-tasks)]
       {:http-xhrio {:method          :get
                     :uri             (url "/api/timeslots")
