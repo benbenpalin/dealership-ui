@@ -340,12 +340,12 @@
 (defn replacement-bill [{:keys [taskName timeToComplete laborCost partName costOfPart]}]
   [:div
    [:div
-    [:span {:style {:display "inline-block" :width "150px" :margin-left "20px"}} taskName]
+    [:span {:style {:display "inline-block" :width "250px" :margin-left "20px"}} taskName]
     [:span {:style {:display "inline-block" :width "100px"}}]
-    [:span {:style {:display "inline-block" :width "100px"}} (str timeToComplete " minutes")]
+    [:span {:style {:display "inline-block" :width "100px"}} (str timeToComplete " hours")]
     [:span {:style {:display "inline-block" :width "100px"}} (str "$" laborCost)]]
    [:div
-    [:span {:style {:display "inline-block" :width "150px" :margin-left "20px" :padding-left "20px"}} (str "Part: " partName)]
+    [:span {:style {:display "inline-block" :width "250px" :margin-left "20px" :padding-left "20px"}} (str "Part: " partName)]
     [:span {:style {:display "inline-block" :width "100px"}}]
     [:span {:style {:display "inline-block" :width "100px"}}]
     [:span {:style {:display "inline-block" :width "100px"}} (str "$" costOfPart)]]])
@@ -356,9 +356,9 @@
 
 (defn test-bill [{:keys [taskName timeToComplete laborCost testStatus]}]
   [:div
-   [:span {:style {:display "inline-block" :width "150px" :margin-left "20px"}} taskName]
+   [:span {:style {:display "inline-block" :width "250px" :margin-left "20px"}} taskName]
    [:span {:style {:display "inline-block" :width "100px"}} testStatus]
-   [:span {:style {:display "inline-block" :width "100px"}} (str timeToComplete " minutes")]
+   [:span {:style {:display "inline-block" :width "100px"}} (str timeToComplete " hours")]
    [:span {:style {:display "inline-block" :width "100px"}} (str "$" laborCost)]])
 
 (defn appointment-bill [appointment-id]
@@ -368,7 +368,6 @@
     [:div {:style {:margin-top "30px"}}
      [:h3 "Bill"]
      [:div [:span {:style {:width "150px" :display "inline-block"}} date] [:span (str dropOff " to " pickUp)]]
-     [:div [:span {:style {:width "150px" :display "inline-block"}} "Customers:"] [:span  (string/join ", " customerNames)]]
      [:div [:span {:style {:width "150px" :display "inline-block"}} "AppointmentId:"] [:span   appointment-id]]
 
      [:div
@@ -382,7 +381,7 @@
       (for [rep replacements]
         [replacement-bill rep])]
      [:br]
-     [:div [:span {:style {:display "inline-block" :width "370px"}} "TOTAL:"]
+     [:div [:span {:style {:display "inline-block" :width "470px"}} "TOTAL:"]
            [:span {:style {:display "inline-block" :width "100px"}} (str "$" bill-total)]]]))
 
 (defn bill-page []
