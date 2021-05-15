@@ -189,7 +189,7 @@
     [{:keys [db]} _]
     (let [{:keys [customer car package timeslotId] :as book} (:book db)
           customerIsNew (= (:customer-status book) "new")
-          carIsNew (= (:customer-status car) "new")
+          carIsNew (= (:car-status book) "new")
           {:keys [inPackage notInPackage]} (:packageTasks db)
           checked-tasks (map :taskId (filter :checked (concat inPackage notInPackage)))]
       {:http-xhrio {:method          :post
@@ -251,9 +251,13 @@
                     :params          {:customer {:isNew  isNew
                                                  :customerIds (if isNew
                                                                 []
-                                                                [(:customerId1 customer) (:customerId2 customer)])
+                                                                (if (= (:number-of-customers sale) "one")
+                                                                  [(:customerId1 customer)]
+                                                                  [(:customerId1 customer) (:customerId2 customer)]))
                                                  :newCustomers (if isNew
-                                                                 [(:newCustomer1 customer) (:newCustomer2 customer)]
+                                                                 (if (=  (:number-of-customers sale) "one")
+                                                                   [(:newCustomer1 customer)]
+                                                                   [(:newCustomer1 customer) (:newCustomer2 customer)])
                                                                  [])}
                                       :carId (:carId sale)
                                       :salePrice (:salePrice sale)}
