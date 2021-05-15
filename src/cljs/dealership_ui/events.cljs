@@ -301,7 +301,7 @@
 (reg-event-db
   :update-report
   (fn [db [_ result]]
-    (assoc-in db [:sales-report :report] [result])))
+    (assoc-in db [:sales-report :report] result)))
 
 (reg-event-db
   :failed-report

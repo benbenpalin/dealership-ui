@@ -143,11 +143,11 @@
      [:div
       [:form
        [:div
-        [:label {:for "startDate" :style (:home-label styles)} "Start Date (mm/dd/yyyy)"]
+        [:label {:for "startDate" :style (:home-label styles)} "Start Date (yyyy-mm-dd)"]
         [:input {:type "date" :id "startDate" :name "startDate" :value start-date
                  :on-change #(rf/dispatch [:set-start-date (-> % .-target .-value)])}]]
        [:div
-        [:label {:for "endDate" :style (:home-label styles)} "End Date (mm/dd/yyyy)"]
+        [:label {:for "endDate" :style (:home-label styles)} "End Date (yyyy-mm-dd)"]
         [:input {:type "date" :id "endDate" :name "endDate" :value end-date
                  :on-change #(rf/dispatch [:set-end-date (-> % .-target .-value)])}]]
        [:div
@@ -162,7 +162,7 @@
         [:th "Total Sold"]
         [:th "Profit"]]
        [:tbody
-        (map sales-row report)]]]]))
+        (map sales-row (:rows report))]]]]))
 
 (defn make-timeslot-option [{:keys [timeslotId startTime endTime]}]
   [:option {:value timeslotId} (str startTime " to " endTime)])
