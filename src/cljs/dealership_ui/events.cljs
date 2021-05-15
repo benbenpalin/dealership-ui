@@ -196,7 +196,9 @@
                     :uri             (url "/api/bookappointment")
                     :params          {:customer {:isNew        customerIsNew
                                                  :newCustomers (if customerIsNew
-                                                                 [(:newCustomer1 customer) (:newCustomer2 customer)]
+                                                                 (if (= (:number-of-customers book) "two")
+                                                                   [(:newCustomer1 customer) (:newCustomer2 customer)]
+                                                                   [(:newCustomer1 customer)])
                                                                  [])}
                                       :car (assoc car :isNew carIsNew)
                                       :packageId package
